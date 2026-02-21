@@ -1,0 +1,14 @@
+{
+  "name": "open-academic-paper-machine",
+  "description": "Open Academic Paper Machine — Autonomous academic paper production system. Uses MCP academic-search tools (Semantic Scholar, OpenAlex, CrossRef, arXiv) for literature search, snowballing, and export. PaperBanana MCP for figure generation. Theory framing, methodology, and writing engine with fill-in-the-blank templates. One command (/write-paper) triggers the full 6-phase pipeline from topic to complete first draft with LaTeX and PDF output. /export-latex for standalone LaTeX export using arxiv-style.",
+  "version": "5.0.0",
+  "author": { "name": "Prof. Dr. Tobias Blask" },
+  "license": "MIT",
+  "mcpServers": {
+    "paperbanana": {
+      "command": "sh",
+      "args": ["-c", "if [ -f \"$PWD/.env\" ]; then set -a; . \"$PWD/.env\"; set +a; fi; exec paperbanana-mcp"],
+      "env": { "GOOGLE_API_KEY": "${GOOGLE_API_KEY}" }
+    }
+  }
+}
