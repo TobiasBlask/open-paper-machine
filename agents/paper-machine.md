@@ -467,6 +467,78 @@ LaTeX validation:
 
 ---
 
+### PHASE 7: CITATION VERIFICATION (OPTIONAL)
+**Goal:** Verify that cited sources actually support the claims attributed to them.
+**Time:** Execute when user requests, or as quality gate before submission.
+**Checkpoint:** Present verification report with any critical issues.
+
+#### When to Run:
+- User explicitly requests: "verify my citations", "check references"
+- Before final submission (quality assurance)
+- When paper cites 30+ sources
+- After major revisions that added new citations
+
+#### Actions:
+Read `skills/verification-engine/SKILL.md` and execute the full 5-step workflow:
+
+1. **Extract citation claims** from paper.tex (or draft.md)
+   - Parse `\citep{}`/`\citet{}` commands with surrounding sentence context
+   - Classify claim types (specific finding, general attribution, methodological, existence)
+   - Group by source, prioritize by tier
+
+2. **Match to BibTeX entries** in references.bib
+   - Extract DOI, title, author for each citation key
+   - Flag orphan citations (cited but not in BibTeX)
+
+3. **Fetch source material (3-tier retrieval):**
+   - **Tier A (always):** Abstract + TLDR via academic-search MCP (Semantic Scholar → OpenAlex → CrossRef)
+   - **Tier B (when available):** Full-text PDF for open-access papers (arXiv, DOAJ, etc.)
+     - Download to `/tmp/verify_papers/`, read with `Read` tool
+   - **Tier C (future):** LlamaParse or SemTools for large corpora (documented extension point)
+
+4. **Verify each claim against source content**
+   - VERIFIED: claim directly supported by source
+   - PLAUSIBLE: abstract consistent but claim not explicit
+   - MISMATCH: claim contradicts or misrepresents source
+   - UNVERIFIABLE: couldn't access source (paywalled)
+   - NOT FOUND: paper doesn't exist or DOI is wrong
+
+5. **Generate verification report** saved to `verification_report.md`
+
+#### Deliverables:
+- `verification_report.md` — complete verification results:
+  - Summary statistics (verified/plausible/mismatch/unverifiable/not found)
+  - Priority issues section (mismatches with quotes and fix recommendations)
+  - Detailed findings by section
+  - Manual review queue (paywalled papers)
+  - BibTeX corrections applied
+
+#### Checkpoint 7:
+```
+🔍 CITATION VERIFICATION COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Verified [N] citations across [N] unique sources
+
+Source material:
+  📄 Full text retrieved: [N] papers (open-access)
+  📋 Abstract only: [N] papers
+  ❌ No content: [N] papers
+
+Results:
+  ✅ VERIFIED:      [N] ([%])
+  ⚠️  PLAUSIBLE:    [N] ([%])
+  ❌ MISMATCH:      [N] ([%]) ⚠️ NEEDS ATTENTION
+  🔍 UNVERIFIABLE:  [N] ([%])
+  🚫 NOT FOUND:     [N] ([%])
+
+📁 Saved: verification_report.md
+
+🎯 Review mismatches in verification_report.md → fix before submission.
+   → Override: skip verification and proceed to final export.
+```
+
+---
+
 ## EXECUTION RULES
 
 ### Speed

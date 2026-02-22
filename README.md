@@ -3,7 +3,7 @@
 > A Claude Code plugin that autonomously writes academic papers — from literature search to production-ready LaTeX/PDF.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Plugin Version](https://img.shields.io/badge/plugin-v5.0.0-green)]()
+[![Plugin Version](https://img.shields.io/badge/plugin-v5.1.0-green)]()
 [![Template](https://img.shields.io/badge/template-arxiv--style-orange)](https://github.com/kourgeorge/arxiv-style)
 
 ## Quick Start
@@ -23,7 +23,7 @@ echo 'GOOGLE_API_KEY="your-key"' > .env
 /write-paper The impact of generative AI on organizational decision-making
 ```
 
-That's it. The plugin ships both MCP servers (`academic-search` and `paperbanana`), all 6 skill engines, 7 slash commands, and the autonomous pipeline agent. Everything starts automatically.
+That's it. The plugin ships both MCP servers (`academic-search` and `paperbanana`), all 7 skill engines, 8 slash commands, and the autonomous pipeline agent. Everything starts automatically.
 
 **Paper that built this tool:** [From Creator to Orchestrator](https://github.com/ProfDrT/From_Creator_to_Orchestrator) — a self-referential paper written entirely by this system.
 
@@ -41,6 +41,7 @@ The machine runs autonomously through **6 phases**:
 | **4. Production** | Write every section as complete paragraphs + generate figures | Read along, adjust |
 | **5. Assembly** | Compile all sections, quality self-assessment, status report | Start review |
 | **6. LaTeX & PDF** | Convert to arxiv-style LaTeX, resolve citations, compile PDF | Download and submit |
+| **7. Verification** *(opt.)* | Fetch source abstracts/PDFs, verify each citation claim | Review flagged mismatches |
 
 **Core principle:** The machine makes decisions and presents results. You steer at checkpoints.
 
@@ -120,6 +121,7 @@ sudo apt-get install texlive-full
 | `/respond-reviewers` | Draft point-by-point R&R response letter |
 | `/generate-figure [description]` | AI-generated academic diagram from text |
 | `/generate-plot [datafile] [intent]` | Statistical plot from CSV/JSON data |
+| `/verify-citations` | **Verify all citations** against actual source content |
 
 ---
 
@@ -127,7 +129,7 @@ sudo apt-get install texlive-full
 
 ### Skill Engines
 
-The plugin contains 6 specialized skill engines that the paper-machine agent orchestrates:
+The plugin contains 7 specialized skill engines that the paper-machine agent orchestrates:
 
 | Engine | Responsibility | Key Capabilities |
 |--------|---------------|-----------------|
@@ -137,6 +139,7 @@ The plugin contains 6 specialized skill engines that the paper-machine agent orc
 | **method-engine** | Research design | SLR, case study, Gioia, Mayring, grounded theory, PLS-SEM, DSR templates |
 | **figure-engine** | Visual production | PaperBanana AI diagrams (Gemini) with matplotlib/seaborn fallback |
 | **latex-engine** | Document compilation | arxiv-style conversion, `\citep`/`\citet` citation resolution, PDF build |
+| **verification-engine** | Citation verification | Source retrieval (abstract + full-text), claim-source comparison, verification report |
 
 ### MCP Servers (Bundled)
 
@@ -149,7 +152,7 @@ Both servers are declared in `plugin.json` and start automatically with the plug
 
 ### Pipeline Agent
 
-The `paper-machine` agent (`agents/paper-machine.md`) is a ~3,200-line autonomous agent prompt that orchestrates all 6 skill engines through the pipeline phases. Operating principles:
+The `paper-machine` agent (`agents/paper-machine.md`) is an autonomous agent prompt that orchestrates all 7 skill engines through the pipeline phases. Operating principles:
 
 1. **DO, don't ask.** Make decisions and present results.
 2. **Produce text, not plans.** Every phase yields deliverable output.
@@ -191,6 +194,7 @@ After `/write-paper` + `/export-latex`, your project directory contains:
 | `status_report.md` | Completion status and open items |
 | `latex/paper.tex` | arxiv-style LaTeX source |
 | `latex/paper.pdf` | Compiled PDF, ready for submission |
+| `verification_report.md` | Citation verification results *(after `/verify-citations`)* |
 
 ---
 
@@ -210,14 +214,16 @@ After `/write-paper` + `/export-latex`, your project directory contains:
 │   ├── draft-section.md        # Single section drafting
 │   ├── generate-figure.md      # AI figure generation
 │   ├── generate-plot.md        # Statistical plot generation
-│   └── respond-reviewers.md    # R&R response drafting
+│   ├── respond-reviewers.md    # R&R response drafting
+│   └── verify-citations.md    # Citation verification command
 ├── skills/
 │   ├── writing-engine/         # Academic writing templates
 │   ├── literature-engine/      # Systematic literature search
 │   ├── theory-engine/          # Theoretical framing
 │   ├── method-engine/          # Research methodology
 │   ├── figure-engine/          # Figure generation (PaperBanana)
-│   └── latex-engine/           # LaTeX conversion + compilation
+│   ├── latex-engine/           # LaTeX conversion + compilation
+│   └── verification-engine/   # Citation verification against sources
 ├── scripts/
 │   └── md_to_latex.py          # Markdown-to-LaTeX converter (733 lines)
 ├── templates/
@@ -246,6 +252,28 @@ The MCP server starts automatically when Claude Code loads the plugin. It reads 
 | Cowork | matplotlib / seaborn | Clean statistical plots |
 
 If PaperBanana is unavailable (no API key, network issues), the figure-engine falls back to Python-based generation using matplotlib and seaborn with academic styling presets.
+
+---
+
+## Citation Verification
+
+The verification-engine checks whether cited papers actually support the claims attributed to them:
+
+```bash
+/verify-citations
+```
+
+**How it works:**
+1. Extracts all `\citep{}`/`\citet{}` citations from `paper.tex` (or `(Author, Year)` from `draft.md`) with surrounding context
+2. Matches to BibTeX entries and DOIs in `references.bib`
+3. Fetches source material via academic-search MCP:
+   - **Tier A:** Abstracts + TLDRs from Semantic Scholar, OpenAlex, CrossRef (always)
+   - **Tier B:** Full-text PDFs for open-access papers — arXiv, DOAJ, etc. (when available)
+4. Compares each attributed claim against actual source content
+5. Classifies as: VERIFIED, PLAUSIBLE, MISMATCH, UNVERIFIABLE, or NOT FOUND
+6. Generates `verification_report.md` with priority issues and fix recommendations
+
+**Prioritized processing:** Load-bearing citations (gap statement, key statistics) are verified first, then methodology/theory citations, then background references. Results after each tier so you can act on critical mismatches immediately.
 
 ---
 

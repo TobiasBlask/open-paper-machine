@@ -7,8 +7,8 @@
     {
       "name": "open-academic-paper-machine",
       "source": ".",
-      "description": "Autonomous academic paper production — from literature search to LaTeX/PDF. 6-phase pipeline with 6 skill engines, 7 commands, PaperBanana AI figures.",
-      "version": "5.0.0"
+      "description": "Autonomous academic paper production — from literature search to LaTeX/PDF. 7-phase pipeline with 7 skill engines, 8 commands, PaperBanana AI figures, citation verification.",
+      "version": "5.1.0"
     }
   ]
 }
