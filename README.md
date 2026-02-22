@@ -6,12 +6,24 @@
 [![Plugin Version](https://img.shields.io/badge/plugin-v5.0.0-green)]()
 [![Template](https://img.shields.io/badge/template-arxiv--style-orange)](https://github.com/kourgeorge/arxiv-style)
 
-Give it a title, topic, or research question. The agent runs the complete pipeline — from literature search to compiled PDF — with you steering at checkpoints.
+## Quick Start
 
+```bash
+# 1. Install the plugin
+/plugin marketplace add ProfDrT/open-paper-machine
+/plugin install open-academic-paper-machine@open-paper-machine
+
+# 2. Install dependencies
+pip install paperbanana[mcp,google] academic-search-mcp
+
+# 3. Set up your API key (free — https://aistudio.google.com/apikey)
+echo 'GOOGLE_API_KEY="your-key"' > .env
+
+# 4. Go
+/write-paper The impact of generative AI on organizational decision-making
 ```
-/write-paper The impact of generative AI on organizational decision-making:
-  A systematic literature review
-```
+
+That's it. The plugin ships both MCP servers (`academic-search` and `paperbanana`), all 6 skill engines, 7 slash commands, and the autonomous pipeline agent. Everything starts automatically.
 
 **Paper that built this tool:** [From Creator to Orchestrator](https://github.com/ProfDrT/From_Creator_to_Orchestrator) — a self-referential paper written entirely by this system.
 
@@ -36,40 +48,43 @@ The machine runs autonomously through **6 phases**:
 
 ## Installation
 
-### Prerequisites
+### What Gets Installed
 
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) or Cowork
-- Python 3.10+ (for PaperBanana figure generation)
-- LaTeX distribution (for PDF compilation)
+The plugin bundles two MCP servers that start automatically:
 
-### Step 1: Install the Plugin
+| MCP Server | pip package | What it does |
+|---|---|---|
+| `academic-search` | [`academic-search-mcp`](https://pypi.org/project/academic-search-mcp/) | Searches Semantic Scholar, OpenAlex, CrossRef, arXiv. Snowballing, BibTeX/CSV export. |
+| `paperbanana` | [`paperbanana`](https://pypi.org/project/paperbanana/) | AI figure generation via Google Gemini. Multi-agent pipeline with iterative refinement. |
 
-Install via the Claude Code plugin manager, or clone this repository into your plugins directory.
+Both are configured in `plugin.json` and start when Claude Code loads the plugin. No manual MCP setup needed.
 
-### Step 2: Install PaperBanana (Figure Generation)
+### Step-by-Step
+
+**1. Add the marketplace and install the plugin:**
 
 ```bash
-pip install paperbanana[mcp,google]
+/plugin marketplace add ProfDrT/open-paper-machine
+/plugin install open-academic-paper-machine@open-paper-machine
 ```
 
-### Step 3: Configure API Key
-
-PaperBanana uses Google Gemini for AI figure generation. Get a free API key:
-
-1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
-2. Create a new API key
-3. Create a `.env` file **in your project root** (where you run Claude Code):
+**2. Install Python dependencies:**
 
 ```bash
-# .env
+pip install paperbanana[mcp,google] academic-search-mcp
+```
+
+**3. Configure your Google API key** (needed for AI figure generation):
+
+Get a free key at [Google AI Studio](https://aistudio.google.com/apikey), then create a `.env` file in your **project root** (where you run Claude Code):
+
+```bash
 GOOGLE_API_KEY="your-api-key-here"
 ```
 
-> **Important:** The `.env` file must be in your project's working directory. The PaperBanana MCP server loads it automatically on startup. Never commit `.env` to version control.
+The PaperBanana MCP server loads `.env` automatically on startup. Never commit `.env` to version control. See `.env.example` for a template.
 
-See `.env.example` for a template.
-
-### Step 4: Install LaTeX
+**4. Install LaTeX** (for PDF compilation):
 
 ```bash
 # macOS
@@ -77,9 +92,12 @@ brew install --cask mactex-no-gui
 
 # Ubuntu/Debian
 sudo apt-get install texlive-full
+```
 
-# Arch
-sudo pacman -S texlive-most
+**5. Start writing:**
+
+```bash
+/write-paper Your Paper Title Here
 ```
 
 ### Cowork Setup
@@ -120,12 +138,14 @@ The plugin contains 6 specialized skill engines that the paper-machine agent orc
 | **figure-engine** | Visual production | PaperBanana AI diagrams (Gemini) with matplotlib/seaborn fallback |
 | **latex-engine** | Document compilation | arxiv-style conversion, `\citep`/`\citet` citation resolution, PDF build |
 
-### MCP Servers
+### MCP Servers (Bundled)
 
-| Server | APIs | Purpose |
-|--------|------|---------|
-| `academic-search` | Semantic Scholar, OpenAlex, CrossRef, arXiv | Literature search, snowballing, BibTeX/CSV export |
-| `paperbanana` | Google Gemini | AI diagram generation, statistical plots, diagram evaluation |
+Both servers are declared in `plugin.json` and start automatically with the plugin:
+
+| Server | Package | APIs | Purpose |
+|--------|---------|------|---------|
+| `academic-search` | `academic-search-mcp` | Semantic Scholar, OpenAlex, CrossRef, arXiv | Literature search, snowballing, multi-query, BibTeX/CSV export |
+| `paperbanana` | `paperbanana[mcp,google]` | Google Gemini | AI diagram generation, statistical plots, diagram evaluation |
 
 ### Pipeline Agent
 
@@ -179,9 +199,10 @@ After `/write-paper` + `/export-latex`, your project directory contains:
 ```
 .
 ├── .claude-plugin/
-│   └── plugin.json             # Plugin manifest + MCP server config
+│   ├── plugin.json             # Plugin manifest + MCP server config
+│   └── marketplace.json        # Marketplace definition for install
 ├── agents/
-│   └── paper-machine.md        # Autonomous 6-phase pipeline agent
+│   └── paper-machine.md        # Autonomous 6-phase pipeline agent (~3,200 lines)
 ├── commands/
 │   ├── write-paper.md          # Full pipeline command
 │   ├── export-latex.md         # LaTeX export command
@@ -198,7 +219,7 @@ After `/write-paper` + `/export-latex`, your project directory contains:
 │   ├── figure-engine/          # Figure generation (PaperBanana)
 │   └── latex-engine/           # LaTeX conversion + compilation
 ├── scripts/
-│   └── md_to_latex.py          # Markdown-to-LaTeX converter
+│   └── md_to_latex.py          # Markdown-to-LaTeX converter (733 lines)
 ├── templates/
 │   └── arxiv.sty               # arxiv-style LaTeX template
 ├── .env.example                # API key template
@@ -210,8 +231,6 @@ After `/write-paper` + `/export-latex`, your project directory contains:
 ---
 
 ## Figure Generation
-
-### With PaperBanana (Claude Code)
 
 PaperBanana uses a multi-agent pipeline powered by Google Gemini:
 
@@ -225,8 +244,6 @@ The MCP server starts automatically when Claude Code loads the plugin. It reads 
 |---|---|---|
 | Claude Code | PaperBanana + Gemini | AI-generated, publication-quality |
 | Cowork | matplotlib / seaborn | Clean statistical plots |
-
-### Fallback
 
 If PaperBanana is unavailable (no API key, network issues), the figure-engine falls back to Python-based generation using matplotlib and seaborn with academic styling presets.
 

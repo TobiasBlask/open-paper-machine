@@ -5,6 +5,10 @@
   "author": { "name": "Prof. Dr. Tobias Blask" },
   "license": "MIT",
   "mcpServers": {
+    "academic-search": {
+      "command": "academic-search-mcp",
+      "args": []
+    },
     "paperbanana": {
       "command": "sh",
       "args": ["-c", "if [ -f \"$PWD/.env\" ]; then set -a; . \"$PWD/.env\"; set +a; fi; exec paperbanana-mcp"],
