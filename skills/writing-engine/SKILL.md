@@ -8,6 +8,15 @@ description: >
   conference papers (ICIS, ECIS, WI), and working papers.
 ---
 
+> **Orchestration Log**: When this skill is activated, append a log entry to `outputs/orchestration_log.md`:
+> ```
+> ### Skill Activation: Writing Engine
+> **Timestamp:** [current date/time]
+> **Actor:** AI Agent (writing-engine)
+> **Input:** [brief description of what the user asked to write/draft/revise]
+> **Output:** [brief description of what was produced — e.g., "Complete draft of Introduction (1,200 words)"]
+> ```
+
 # Writing Engine
 
 ## Core Principle

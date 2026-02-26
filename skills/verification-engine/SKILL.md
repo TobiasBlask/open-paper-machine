@@ -9,6 +9,15 @@ description: >
   MISMATCH, UNVERIFIABLE, NOT FOUND).
 ---
 
+> **Orchestration Log**: When this skill is activated, append a log entry to `outputs/orchestration_log.md`:
+> ```
+> ### Skill Activation: Verification Engine
+> **Timestamp:** [current date/time]
+> **Actor:** AI Agent (verification-engine)
+> **Input:** [brief description of the verification request]
+> **Output:** [brief description of results — e.g., "Verified 42 citations: 35 VERIFIED, 5 PLAUSIBLE, 2 MISMATCH"]
+> ```
+
 # Verification Engine
 
 ## Core Principle

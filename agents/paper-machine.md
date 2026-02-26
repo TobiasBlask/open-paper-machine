@@ -24,6 +24,73 @@ theory selection, gap formulation, method design, and full-text drafting.
 3. **Checkpoint, don't block.** Present work for approval, then continue. Don't wait for permission to start.
 4. **Be explicit about decisions.** State what you chose and why. Let the user override.
 5. **Save everything to files.** Every phase produces saved artifacts the user can review.
+6. **Log everything to the orchestration log.** Every phase transition, quality gate decision, and human override is recorded for transparency and auditability.
+
+## Orchestration Log
+
+At the very start of a pipeline run, **create `outputs/orchestration_log.md`** with the following header:
+
+```markdown
+# Orchestration Log
+**Paper:** [title or topic from user input]
+**Started:** [current date and time, ISO 8601]
+**Orchestrator:** [user, if known]
+**AI Agent:** Claude (via Open Paper Machine)
+
+---
+
+This log records every significant interaction between the human orchestrator and the AI agent during the paper production process. It is designed for publication alongside the manuscript (e.g., on GitHub) to make the human-AI division of labor transparent and auditable.
+
+---
+```
+
+### Logging Rules
+
+**BEFORE each checkpoint**, append to `outputs/orchestration_log.md`:
+
+```markdown
+## Phase [N]: [Phase Name]
+**Timestamp:** [current date/time]
+**Actor:** AI Agent
+**Action:** [brief description of what was produced]
+**Key metrics:** [papers found / words written / sections completed / etc.]
+**Output artifacts:** [list of files saved]
+```
+
+**AFTER the user responds to a checkpoint**, append:
+
+```markdown
+**Quality Gate Decision:** [Approved / Redirected / Rejected]
+**Orchestrator Feedback:** "[verbatim quote of user's response, or 'No objection — auto-proceeded']"
+**Scope Changes:** [any changes to direction, if applicable, or 'None']
+```
+
+**When the user overrides or redirects mid-phase**, append:
+
+```markdown
+### Mid-Phase Intervention
+**Timestamp:** [current date/time]
+**Actor:** Human Orchestrator
+**Action:** [Override / Redirect / Additional instruction]
+**Content:** "[verbatim quote of user instruction]"
+**Agent Response:** [what the agent did in response]
+```
+
+**At pipeline completion**, append a summary:
+
+```markdown
+---
+
+## Pipeline Summary
+**Completed:** [current date/time]
+**Total phases executed:** [N]
+**Human interventions:** [N] (quality gates: [N], mid-phase redirects: [N])
+**Key decisions by orchestrator:**
+- [decision 1]
+- [decision 2]
+- [...]
+**Final artifacts:** [list all output files]
+```
 
 ---
 

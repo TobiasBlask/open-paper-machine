@@ -8,6 +8,15 @@ description: >
   APIs first, web search only for verification.
 ---
 
+> **Orchestration Log**: When this skill is activated, append a log entry to `outputs/orchestration_log.md`:
+> ```
+> ### Skill Activation: Literature Engine
+> **Timestamp:** [current date/time]
+> **Actor:** AI Agent (literature-engine)
+> **Input:** [brief description of the search/synthesis request]
+> **Output:** [brief description of results — e.g., "47 papers found across 4 databases, deduplicated to 38"]
+> ```
+
 # Literature Engine
 
 ## Data Source Priority — STRICT

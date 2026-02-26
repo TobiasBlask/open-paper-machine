@@ -8,6 +8,15 @@ description: >
   and mixed methods.
 ---
 
+> **Orchestration Log**: When this skill is activated, append a log entry to `outputs/orchestration_log.md`:
+> ```
+> ### Skill Activation: Method Engine
+> **Timestamp:** [current date/time]
+> **Actor:** AI Agent (method-engine)
+> **Input:** [brief description of the methodology request]
+> **Output:** [brief description of what was produced — e.g., "DSR method section drafted with 3 evaluation criteria"]
+> ```
+
 # Method Engine
 
 ## Method Selection Guide

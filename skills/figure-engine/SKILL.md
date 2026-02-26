@@ -7,6 +7,15 @@ description: >
   Supports methodology diagrams, statistical plots, and comparative evaluation.
 ---
 
+> **Orchestration Log**: When this skill is activated, append a log entry to `outputs/orchestration_log.md`:
+> ```
+> ### Skill Activation: Figure Engine
+> **Timestamp:** [current date/time]
+> **Actor:** AI Agent (figure-engine)
+> **Input:** [brief description of the figure request]
+> **Output:** [brief description of what was produced — e.g., "Generated methodology diagram (fig03_methodology.png), 3 iterations"]
+> ```
+
 # Figure Engine
 
 ## Core Principle

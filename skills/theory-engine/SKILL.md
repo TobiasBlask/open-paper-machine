@@ -6,6 +6,15 @@ description: >
   Provides concrete theory-to-paper templates, not abstract advice.
 ---
 
+> **Orchestration Log**: When this skill is activated, append a log entry to `outputs/orchestration_log.md`:
+> ```
+> ### Skill Activation: Theory Engine
+> **Timestamp:** [current date/time]
+> **Actor:** AI Agent (theory-engine)
+> **Input:** [brief description of the theory selection/gap formulation request]
+> **Output:** [brief description of what was produced — e.g., "Selected sociotechnical systems theory, drafted theoretical framing (800 words)"]
+> ```
+
 # Theory Engine
 
 ## Purpose

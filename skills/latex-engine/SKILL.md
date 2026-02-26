@@ -7,6 +7,15 @@ description: >
   tables, figure environments, and compiled PDF output.
 ---
 
+> **Orchestration Log**: When this skill is activated, append a log entry to `outputs/orchestration_log.md`:
+> ```
+> ### Skill Activation: LaTeX Engine
+> **Timestamp:** [current date/time]
+> **Actor:** AI Agent (latex-engine)
+> **Input:** [brief description of the export request]
+> **Output:** [brief description of what was produced — e.g., "Compiled paper.tex to PDF (24 pages), no errors"]
+> ```
+
 # LaTeX Engine
 
 ## Core Principle
