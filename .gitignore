@@ -11,8 +11,7 @@ outputs/
 *.log
 *.out
 
-# Paper directory — only source files tracked (paper.tex, references.bib)
-paper/*.pdf
+# Paper directory — source files + compiled PDF tracked; figures and build artifacts excluded
 paper/figures/
 paper/arxiv.sty
 
