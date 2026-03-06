@@ -241,17 +241,17 @@ Between each phase, the system presents a checkpoint summary to the user, report
 
 To evaluate the Open Academic Paper Machine, we employed a case study in which the system was used to orchestrate a position paper about the societal and epistemological implications of AI-augmented academic writing. The resulting paper, \emph{From Creator to Orchestrator?} \citep{blask2026creator}, served as both the primary demonstration artifact and the basis for evaluating the system's capabilities and limitations.
 
-The input to the system consisted of a paper title, the authors' names and affiliations, and a brief description specifying that the paper should address the question of what it means for academic knowledge production when an AI system can orchestrate a research paper. The system generated initial outputs for each pipeline phase---literature searches, theoretical framing, structure, and draft text---while human researchers reviewed and directed the process at each checkpoint.
+The input to the system consisted of a paper title, the authors' names and affiliations, and a brief description specifying that the paper should address the question of what it means for academic knowledge production when an AI system can orchestrate a research paper. The system performed the heavy lifting---executing literature searches, selecting theoretical lenses, generating draft text, and compiling the manuscript---while the human authors initiated the process, controlled the pipeline at each checkpoint, steered substantive decisions, revised the output, and assumed full responsibility for the final scholarly product.
 
 \subsection{Pipeline Execution Trace}
 
-The system executed the full six-phase pipeline over approximately 45 minutes of wall-clock time (including API latency for database searches and LLM inference).
+The system executed the six core pipeline phases over approximately 45 minutes of wall-clock time (including API latency for database searches and LLM inference), followed by four rounds of human-directed revision (Phase~8) over subsequent days. The position paper was initially produced with the six-phase pipeline of version~5.3.0; the verification and revision capabilities (Phases~7--8) were added in version~5.4.0 and applied during the editorial rounds.
 
 In \textbf{Phase~1 (Reconnaissance)}, the system generated six search queries spanning terms such as ``LLM academic writing authorship,'' ``AI generated research paper ethics,'' and ``generative AI scholarly communication.'' Searching across Semantic Scholar, OpenAlex, CrossRef, and arXiv yielded 127 initial results, which were deduplicated to 89 unique papers. Forward and backward snowballing on the top 10 papers by citation count added 34 additional papers, resulting in a literature base of 103 unique papers after final deduplication.
 
 In \textbf{Phase~2 (Framing)}, the system selected Actor-Network Theory and the concept of epistemic authority as its theoretical lenses---a reasonable choice for examining how AI systems alter the relationships between human researchers, knowledge artifacts, and the academic community.
 
-In \textbf{Phase~3 (Structure)}, the system produced a concept matrix with 35 papers across six thematic dimensions and designed a seven-section paper structure. In \textbf{Phase~4 (Production)}, the system wrote the complete draft, producing approximately 8,200 words of academic prose with 46 integrated citations. In \textbf{Phase~5 (Assembly)}, the system compiled the manuscript and identified two citation keys without matching BibTeX entries (subsequently corrected). In \textbf{Phase~6 (\LaTeX/PDF)}, the system converted the draft to \LaTeX, compiled a PDF, and produced an 18-page manuscript with two figures and one table.
+In \textbf{Phase~3 (Structure)}, the system produced a concept matrix with 35 papers across six thematic dimensions and designed a seven-section paper structure. In \textbf{Phase~4 (Production)}, the system wrote the complete draft, producing approximately 8,200 words of academic prose with 46 integrated citations. In \textbf{Phase~5 (Assembly)}, the system compiled the manuscript and identified two citation keys without matching BibTeX entries (subsequently corrected). In \textbf{Phase~6 (\LaTeX/PDF)}, the system converted the draft to \LaTeX, compiled a PDF, and produced an 18-page manuscript with two figures and one table. Subsequently, four rounds of human-directed revision (Phase~8) expanded the manuscript to approximately 10,000 words with 62 integrated citations, with the verification engine (Phase~7) applied between rounds to check citation accuracy.
 
 \subsection{Output Assessment}
 
@@ -259,7 +259,7 @@ We assessed the position paper against five criteria:
 
 \textbf{Structural completeness.} The paper contains all expected sections of an academic manuscript: abstract, introduction (with clear gap statement and research questions), theoretical background, methodology, findings, discussion, conclusion, and references. \emph{Assessment: Fully met.}
 
-\textbf{Citation accuracy.} Of the 46 citations, 44 (95.7\%) correspond to real, published papers with correct bibliographic details. Two citations contained minor errors (incorrect publication year), detected by the verification engine and corrected. No hallucinated citations were present. \emph{Assessment: Largely met.}
+\textbf{Citation accuracy.} The final manuscript contains 62 citations. The verification engine detected two citations with minor errors (incorrect publication year) in the initial 46-citation draft; these were corrected during revision. No hallucinated citations were present across any version. \emph{Assessment: Largely met.}
 
 \textbf{Argumentative coherence.} The paper presents a logical flow from problem identification through theoretical framing to findings and implications. However, the depth of theoretical engagement is notably shallower than what an experienced human researcher would produce. The theoretical framework is applied but not critically interrogated. \emph{Assessment: Partially met.}
 
@@ -280,7 +280,7 @@ The Open Academic Paper Machine demonstrates that it is technically feasible to 
 
 Based on our experience designing, developing, and evaluating the Open Academic Paper Machine, we articulate five design principles that generalize beyond our specific artifact:
 
-\textbf{DP1: Phase Decomposition.} \emph{Complex scholarly workflows should be decomposed into sequential, checkpointed phases that mirror the natural stages of academic paper production.} The six-phase pipeline reflects the actual workflow of experienced researchers. Decomposition constrains the LLM's context to a manageable scope at each step (reducing hallucination and drift) and creates natural intervention points for human oversight.
+\textbf{DP1: Phase Decomposition.} \emph{Complex scholarly workflows should be decomposed into sequential, checkpointed phases that mirror the natural stages of academic paper production.} The eight-phase pipeline reflects the actual workflow of experienced researchers. Decomposition constrains the LLM's context to a manageable scope at each step (reducing hallucination and drift) and creates natural intervention points for human oversight.
 
 \textbf{DP2: Skill Modularity.} \emph{Domain expertise should be encapsulated in modular, independently maintainable skill engines that the LLM loads on demand.} The eight-engine architecture separates concerns, enabling domain experts to contribute knowledge to specific engines without understanding the full system, and supporting recomposition for different use cases.
 
