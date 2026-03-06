@@ -11,8 +11,7 @@ outputs/
 *.log
 *.out
 
-# Paper directory — source files + compiled PDF tracked; figures and build artifacts excluded
-paper/figures/
+# Paper directory — build artifacts excluded
 paper/arxiv.sty
 
 # Working files

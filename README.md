@@ -25,13 +25,17 @@ echo 'GOOGLE_API_KEY="your-key"' > .env
 
 That's it. The plugin ships both MCP servers (`academic-search` and `paperbanana`), all 8 skill engines, 8 slash commands, and the autonomous pipeline agent. Everything starts automatically.
 
-**Technical paper:** *The Open Academic Paper Machine: An Autonomous LLM Plugin for End-to-End Academic Paper Production* (Blask, 2026) — describes the system architecture, design principles, and evaluation. LaTeX source in [`paper/`](paper/).
+**Technical paper:** [The Open Academic Paper Machine: An Autonomous LLM Plugin for End-to-End Academic Paper Production](paper/paper.pdf) (Blask, 2026) — describes the system architecture, design principles, and evaluation. LaTeX source in [`paper/`](paper/).
 
 **Position paper:** [From Creator to Orchestrator? How an LLM Agent Wrote This Paper and What That Means for Science](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6358578) (Blask & Funk, 2026) — a position paper on AI-augmented knowledge production, orchestrated through human-AI interaction using this system. [GitHub repo](https://github.com/TobiasBlask/From_Creator_to_Orchestrator).
 
 ---
 
 ## How It Works
+
+<p align="center">
+  <img src="paper/figures/fig2_pipeline_flow.png" alt="Pipeline Flow" width="700">
+</p>
 
 The machine runs autonomously through **8 phases**:
 
@@ -134,6 +138,10 @@ sudo apt-get install texlive-full
 
 ## Architecture
 
+<p align="center">
+  <img src="paper/figures/fig1_system_architecture.png" alt="System Architecture" width="700">
+</p>
+
 ### Skill Engines
 
 The plugin contains 8 specialized skill engines that the paper-machine agent orchestrates:
@@ -150,6 +158,10 @@ The plugin contains 8 specialized skill engines that the paper-machine agent orc
 | **review-engine** | Revision automation | PDF annotation extraction, comment classification, change planning, latexdiff generation |
 
 ### MCP Servers (Bundled)
+
+<p align="center">
+  <img src="paper/figures/fig3_mcp_integration.png" alt="MCP Integration" width="700">
+</p>
 
 Both servers are declared in `plugin.json` and start automatically with the plugin:
 
@@ -241,9 +253,11 @@ After `/write-paper` + `/export-latex`, your project directory contains:
 │   └── extract_annotations.py  # PDF annotation extraction (PyMuPDF)
 ├── templates/
 │   └── arxiv.sty               # arxiv-style LaTeX template
-├── paper/                          # Technical paper source (reference only)
-│   ├── paper.tex               # LaTeX source (Blask, 2026)
-│   └── references.bib          # Bibliography
+├── paper/                          # Technical paper (Blask, 2026)
+│   ├── paper.tex               # LaTeX source
+│   ├── paper.pdf               # Compiled PDF
+│   ├── references.bib          # Bibliography
+│   └── figures/                # PaperBanana-generated diagrams
 ├── .env.example                # API key template
 ├── .gitignore
 ├── LICENSE
