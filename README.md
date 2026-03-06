@@ -25,7 +25,7 @@ echo 'GOOGLE_API_KEY="your-key"' > .env
 
 That's it. The plugin ships both MCP servers (`academic-search` and `paperbanana`), all 8 skill engines, 8 slash commands, and the autonomous pipeline agent. Everything starts automatically.
 
-**Technical paper:** [The Open Academic Paper Machine: An Autonomous LLM Plugin for End-to-End Academic Paper Production](paper/paper.pdf) (Blask, 2026) — describes the system architecture, design principles, and evaluation. See [`paper/`](paper/) for the full LaTeX source.
+**Technical paper:** *The Open Academic Paper Machine: An Autonomous LLM Plugin for End-to-End Academic Paper Production* (Blask, 2026) — describes the system architecture, design principles, and evaluation. LaTeX source in [`paper/`](paper/).
 
 **Position paper:** [From Creator to Orchestrator? How an LLM Agent Wrote This Paper and What That Means for Science](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6358578) (Blask & Funk, 2026) — a position paper on AI-augmented knowledge production, orchestrated through human-AI interaction using this system. [GitHub repo](https://github.com/TobiasBlask/From_Creator_to_Orchestrator).
 
@@ -241,12 +241,9 @@ After `/write-paper` + `/export-latex`, your project directory contains:
 │   └── extract_annotations.py  # PDF annotation extraction (PyMuPDF)
 ├── templates/
 │   └── arxiv.sty               # arxiv-style LaTeX template
-├── paper/
-│   ├── paper.tex               # LaTeX source of the technical paper
-│   ├── paper.pdf               # Compiled PDF (Blask, 2026)
-│   ├── references.bib          # Bibliography
-│   ├── arxiv.sty               # arxiv-style template
-│   └── figures/                # PaperBanana-generated figures
+├── paper/                          # Technical paper source (reference only)
+│   ├── paper.tex               # LaTeX source (Blask, 2026)
+│   └── references.bib          # Bibliography
 ├── .env.example                # API key template
 ├── .gitignore
 ├── LICENSE
@@ -353,7 +350,7 @@ If you use this tool in your research, please cite the technical paper:
          End-to-End Academic Paper Production},
   author={Blask, Tobias-Benedikt},
   year={2026},
-  note={Available at \url{https://github.com/TobiasBlask/open-paper-machine/blob/main/paper/paper.pdf}}
+  note={Working paper}
 }
 ```
 

@@ -11,6 +11,11 @@ outputs/
 *.log
 *.out
 
+# Paper directory — only source files tracked (paper.tex, references.bib)
+paper/*.pdf
+paper/figures/
+paper/arxiv.sty
+
 # Working files
 .claude/
 draft.md
