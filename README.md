@@ -3,7 +3,7 @@
 > A Claude Code plugin that autonomously writes academic papers — from literature search to production-ready LaTeX/PDF.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Plugin Version](https://img.shields.io/badge/plugin-v5.3.0-green)]()
+[![Plugin Version](https://img.shields.io/badge/plugin-v5.4.0-green)]()
 [![Template](https://img.shields.io/badge/template-arxiv--style-orange)](https://github.com/kourgeorge/arxiv-style)
 
 ## Quick Start
@@ -27,7 +27,7 @@ That's it. The plugin ships both MCP servers (`academic-search` and `paperbanana
 
 **Technical paper:** [The Open Academic Paper Machine: An Autonomous LLM Plugin for End-to-End Academic Paper Production](paper/paper.pdf) (Blask, 2026) — describes the system architecture, design principles, and evaluation. See [`paper/`](paper/) for the full LaTeX source.
 
-**Companion paper:** [From Creator to Orchestrator? How an LLM Agent Wrote This Paper and What That Means for Science](https://papers.ssrn.com/abstract=6358440) (Blask & Funk, 2026) — a self-referential position paper written entirely by this system. [GitHub repo](https://github.com/TobiasBlask/From_Creator_to_Orchestrator).
+**Position paper:** [From Creator to Orchestrator? How an LLM Agent Wrote This Paper and What That Means for Science](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6358578) (Blask & Funk, 2026) — a position paper on AI-augmented knowledge production, orchestrated through human-AI interaction using this system. [GitHub repo](https://github.com/TobiasBlask/From_Creator_to_Orchestrator).
 
 ---
 
@@ -121,7 +121,7 @@ sudo apt-get install texlive-full
 
 | Command | Description |
 |---------|-------------|
-| `/write-paper [title]` | **Full pipeline** — all 6 phases, start to finish |
+| `/write-paper [title]` | **Full pipeline** — all 8 phases, start to finish |
 | `/export-latex` | Convert finished draft to arxiv-style LaTeX + compiled PDF |
 | `/search-papers [topic]` | Phase 1 only: systematic literature search across 4 APIs |
 | `/draft-section [section]` | Write one specific section as complete paragraphs |
@@ -357,15 +357,16 @@ If you use this tool in your research, please cite the technical paper:
 }
 ```
 
-The companion paper (written entirely by this system):
+The position paper (orchestrated through human-AI interaction using this system):
 
 ```bibtex
 @article{blask2026creator,
   title={From Creator to Orchestrator? How an {LLM} Agent Wrote This Paper
          and What That Means for Science},
   author={Blask, Tobias-Benedikt and Funk, Burkhardt},
+  journal={SSRN Electronic Journal},
   year={2026},
-  note={Available at \url{https://papers.ssrn.com/abstract=6358440}}
+  note={Available at \url{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6358578}}
 }
 ```
 
@@ -387,4 +388,4 @@ The figure generation pipeline is based on:
 
 MIT License. See [LICENSE](LICENSE) for details.
 
-**Authors:** Prof. Dr. Tobias Blask — [Harz University of Applied Sciences](https://www.hs-harz.de) · Prof. Dr. Burkhardt Funk — [Leuphana University of Lüneburg](https://www.leuphana.de)
+**Author:** Prof. Dr. Tobias-Benedikt Blask — [Harz University of Applied Sciences](https://www.hs-harz.de)
