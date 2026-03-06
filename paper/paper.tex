@@ -13,6 +13,19 @@
 \usepackage{longtable}
 \usepackage{url}
 \usepackage{microtype}
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  frame=single,
+  xleftmargin=1em,
+  framexleftmargin=0.5em,
+  numbers=none,
+  tabsize=2,
+  captionpos=b,
+  aboveskip=1em,
+  belowskip=1em
+}
 
 \renewcommand{\headeright}{Blask, 2026}
 \renewcommand{\undertitle}{Technical Report}
@@ -139,13 +152,146 @@ We assess the output against five criteria: (1) structural completeness (all exp
 \section{The Open Academic Paper Machine: System Design}
 % ============================================================================
 
-\subsection{System Overview and Architecture}
+\subsection{Platform Foundation: Claude Code Plugins}
 
-The Open Academic Paper Machine (version 5.4.0) is an open-source plugin for Claude Code, Anthropic's AI-powered development environment. It transforms Claude from a general-purpose coding assistant into a specialized academic paper production agent by providing domain-specific knowledge through eight skill engines, external tool access through two MCP servers, and workflow orchestration through a structured pipeline with eight slash commands.
+The Open Academic Paper Machine (version~5.4.0) is built on Claude Code, Anthropic's AI-powered software development environment that combines the Claude LLM with a terminal-based agentic interface supporting autonomous multi-turn reasoning, file system access, and shell execution. Claude Code provides a \emph{plugin architecture} that allows developers to extend the system with custom skills, agents, commands, and tool integrations.\footnote{See \url{https://code.claude.com/docs/en/plugins} for the full plugin specification.} Plugins are directory-based extensions, each identified by a manifest file (\texttt{.claude-plugin/plugin.json}) that declares the plugin's name, version, capabilities, and MCP server dependencies. When a plugin is loaded, Claude Code automatically starts the declared MCP servers and makes skills available under a namespaced prefix (e.g., \texttt{/open-academic-paper-machine:write-paper}).
 
-The system architecture follows a layered design. At the \emph{orchestration layer}, the LLM (Claude) serves as the central reasoning engine, interpreting user requests, planning execution steps, and coordinating tool calls. The \emph{skill layer} provides domain-specific knowledge through markdown-based instruction files (\texttt{SKILL.md} files) that encode expert knowledge about academic writing conventions, theoretical frameworks, methodological templates, and quality criteria. The \emph{tool layer} connects the LLM to external services through two MCP servers: the academic-search server provides access to four academic databases (Semantic Scholar, OpenAlex, CrossRef, and arXiv), while the PaperBanana server enables AI-powered figure generation via Google Gemini. The \emph{output layer} handles file management, format conversion (markdown to \LaTeX), and PDF compilation.
+The plugin architecture was chosen over two alternatives: (a)~a standalone application with direct API access to Claude, and (b)~a collection of independent prompt templates. The plugin approach offers three advantages. First, it inherits Claude Code's full tool-use and agentic capabilities---file system access, shell execution, multi-turn reasoning---without reimplementing them. Second, it provides a standardized extension mechanism with namespace isolation, version management, and marketplace distribution, making the system shareable and reproducible. Third, the plugin's skill and agent definitions are written in Markdown, enabling domain experts without programming experience to inspect, modify, and extend the system's knowledge base. The complete system is publicly available at \url{https://github.com/TobiasBlask/open-paper-machine} under the MIT License.
 
-This architecture is realized as a Claude Code plugin---a directory-based extension mechanism where the system's knowledge and capabilities are defined through configuration files (\texttt{plugin.json}), skill definitions (\texttt{SKILL.md} files), and MCP server specifications. The central pipeline agent (\texttt{paper-machine.md}, approximately 3,200 lines) orchestrates all eight skill engines through the pipeline phases. Both MCP servers are distributed as Python packages on PyPI (\texttt{academic-search-mcp} and \texttt{paperbanana}), requiring only \texttt{pip install} and a Google API key for figure generation. The complete system is publicly available at \url{https://github.com/TobiasBlask/open-paper-machine} under the MIT License.
+\subsection{Plugin Structure and Configuration}
+
+The plugin is organized as a directory tree following the Claude Code plugin specification. Listing~\ref{lst:tree} shows the top-level structure with its five functional directories.
+
+\begin{lstlisting}[caption={Directory structure of the Open Academic Paper Machine plugin (v5.4.0). The system comprises 8 skill engines, 8 slash commands, 1 pipeline agent, 2 utility scripts, and 1 \LaTeX\ template.},label={lst:tree},float=t]
+open-paper-machine/
++-- .claude-plugin/
+|   +-- plugin.json            # Plugin manifest
++-- agents/
+|   +-- paper-machine.md       # Pipeline agent (681 lines)
++-- commands/                   # 8 slash commands
+|   +-- write-paper.md          #   /write-paper  -> full pipeline
+|   +-- search-papers.md        #   /search-papers -> Phase 1
+|   +-- draft-section.md        #   /draft-section -> Phase 4
+|   +-- export-latex.md         #   /export-latex  -> Phase 6
+|   +-- verify-citations.md     #   /verify-citations -> Phase 7
+|   +-- respond-reviewers.md    #   /respond-reviewers -> Phase 8
+|   +-- generate-figure.md      #   /generate-figure
+|   +-- generate-plot.md        #   /generate-plot
++-- skills/                     # 8 domain-specific engines
+|   +-- literature-engine/SKILL.md   (222 lines)
+|   +-- theory-engine/SKILL.md       (178 lines)
+|   +-- method-engine/SKILL.md       (362 lines)
+|   +-- writing-engine/SKILL.md      (348 lines)
+|   +-- figure-engine/SKILL.md       (218 lines)
+|   +-- latex-engine/SKILL.md        (290 lines)
+|   +-- verification-engine/SKILL.md (385 lines)
+|   +-- review-engine/SKILL.md       (600 lines)
++-- scripts/
+|   +-- md_to_latex.py          # Markdown->LaTeX (733 lines)
+|   +-- extract_annotations.py  # PDF annotation extractor
++-- templates/
+    +-- arxiv.sty               # arXiv-style LaTeX template
+\end{lstlisting}
+
+The plugin manifest (Listing~\ref{lst:manifest}) declares the system's identity and---critically---its MCP server dependencies. The \texttt{mcpServers} object specifies the command to launch each server process; when the plugin is loaded, Claude Code starts these processes automatically, making their tools available to the LLM during pipeline execution. Both MCP servers are distributed as Python packages on PyPI (\texttt{pip install academic-search-mcp} and \texttt{pip install paperbanana}).
+
+\begin{lstlisting}[caption={Plugin manifest (\texttt{plugin.json}) declaring two MCP server dependencies. The \texttt{mcpServers} object maps server names to launch commands; Claude Code starts these processes when the plugin is loaded.},label={lst:manifest},float=t]
+{
+  "name": "open-academic-paper-machine",
+  "description": "Autonomous academic paper production system",
+  "version": "5.4.0",
+  "author": { "name": "Prof. Dr. Tobias Blask" },
+  "license": "MIT",
+  "mcpServers": {
+    "academic-search": {
+      "command": "academic-search-mcp",
+      "args": []
+    },
+    "paperbanana": {
+      "command": "sh",
+      "args": ["-c", "... exec paperbanana-mcp"],
+      "env": { "GOOGLE_API_KEY": "${GOOGLE_API_KEY}" }
+    }
+  }
+}
+\end{lstlisting}
+
+Each file in \texttt{commands/} maps a user-facing slash command to its corresponding agent or skill engine. These command files are deliberately minimal: they specify a description (displayed in Claude Code's help system) and a short instruction that activates the appropriate agent. Listing~\ref{lst:command} shows the primary entry point, \texttt{/write-paper}, which activates the pipeline agent and triggers autonomous execution of all phases.
+
+\begin{lstlisting}[caption={The \texttt{/write-paper} command file---the primary entry point that activates the pipeline agent. The \texttt{\$ARGUMENTS} placeholder captures the user's research topic.},label={lst:command},float=t]
+---
+description: >
+  START THE PAPER MACHINE. Give a title, topic,
+  or research question -- the autonomous agent
+  takes over and runs the complete pipeline.
+---
+
+# Write Paper: $ARGUMENTS
+
+Activate the paper-machine agent.
+Read agents/paper-machine.md in full.
+Then execute Phase 1 immediately.
+Do not ask for confirmation to start.
+\end{lstlisting}
+
+\subsection{Skill Engine Architecture}\label{sec:skill_engines}
+
+Each skill engine is implemented as a single \texttt{SKILL.md} file: a Markdown document with YAML frontmatter that specifies when the skill should be activated, followed by structured instructions that encode domain expertise as fill-in-the-blank templates, decision heuristics, and quality criteria. Claude Code's skill system loads these files contextually---the writing engine is activated when the user drafts or revises text, the literature engine when searches are needed---enabling on-demand access to domain knowledge without consuming the LLM's context window with all 3,300 lines simultaneously.
+
+This design exploits the LLM's instruction-following capabilities: rather than implementing academic writing logic in procedural code, the system encodes it as structured natural language that the LLM interprets and executes. Listing~\ref{lst:skill} illustrates this approach with an excerpt from the writing engine's introduction template---the six-paragraph formula for opening an academic paper. The template uses bracketed placeholders (\texttt{[...]}) for content that varies by paper while the structural scaffolding (paragraph roles, transition patterns, gap formulation strategies) remains fixed. This template-driven approach operationalizes tacit expert knowledge: experienced academic writers internalize these conventions over years of practice; the template makes them explicit and LLM-executable.
+
+\begin{lstlisting}[caption={Excerpt from \texttt{writing-engine/SKILL.md}: the six-paragraph introduction formula with fill-in-the-blank templates. Bracketed placeholders are instantiated by the LLM for each paper; the structural conventions (paragraph roles, gap patterns, contribution format) are fixed.},label={lst:skill},float=t]
+## INTRODUCTION (Target: 1500-2000 words)
+### The 6-Paragraph Formula
+
+**Paragraph 1 -- The Hook (Practical Relevance)**
+Template:
+  [Phenomenon] is transforming [domain/industry].
+  [Concrete statistic or trend] (Source, Year).
+  This raises fundamental questions about [broad
+  challenge], particularly regarding [specific aspect].
+
+**Paragraph 3 -- The Gap (What We Don't Know)**
+Gap patterns (use ONE or combine):
+- Fragmented knowledge: "While these streams provide
+  valuable insights individually, they remain largely
+  disconnected. No integrative framework exists..."
+- Missing mechanism: "Prior work establishes that
+  [X influences Y], but the underlying mechanisms
+  are insufficiently understood."
+- Temporal gap: "Much of the existing research
+  predates the emergence of [new development]."
+
+**Paragraph 5 -- Contribution Statement**
+Template (3-contribution pattern):
+  This study makes three contributions. First, we
+  [contribution 1]. While prior work has [X], we [Y].
+  Second, we [contribution 2]. This extends [theory]
+  by [specific extension]. Third, we derive
+  [contribution 3 -- practical].
+\end{lstlisting}
+
+Table~\ref{tab:engines} summarizes all eight skill engines. Three engines deserve additional technical detail. The \emph{method engine} (362~lines) provides complete templates for eight research methodologies commonly used in IS research: systematic literature review (PRISMA protocol), design science research \citep{peffers2007dsrm}, case study (Yin), Gioia method, Mayring content analysis, grounded theory, PLS-SEM, and mixed methods. The \emph{verification engine} (385~lines) implements a three-tier citation verification protocol: (a)~abstract-level verification against the cited paper's abstract, (b)~full-text verification for open-access papers, and (c)~metadata verification confirming that cited works exist with correct bibliographic details. The \emph{review engine} (600~lines, the largest), introduced in v5.4.0, automates a seven-step revision workflow: extract PDF annotations, map comments to \texttt{paper.tex} locations, classify actions, present a change plan for approval, implement changes, recompile with \texttt{latexdiff} for visual diff generation, and document all modifications in a revision log.
+
+\begin{table}[t]
+\centering
+\caption{Skill engine summary. Each engine is a single \texttt{SKILL.md} file encoding domain expertise as structured natural language instructions. Total knowledge base: approximately 3,300 lines of Markdown.}
+\label{tab:engines}
+\begin{tabularx}{\textwidth}{llcX}
+\toprule
+\textbf{Engine} & \textbf{Lines} & \textbf{Phase} & \textbf{Key Capability} \\
+\midrule
+Literature & 222 & 1 & Multi-database search, snowballing, deduplication \\
+Theory & 178 & 2 & Theory catalog with selection heuristics, gap formulation, contribution framing \\
+Method & 362 & 2--3 & Templates for 8 research methods (SLR, DSR, case study, Gioia, Mayring, grounded theory, PLS-SEM, mixed) \\
+Writing & 348 & 4 & Section-level templates: 6-paragraph introduction, 5-block discussion, citation integration \\
+Figure & 218 & 4 & AI figure generation via PaperBanana; matplotlib fallback \\
+\LaTeX & 290 & 6 & Markdown-to-\LaTeX\ conversion via 733-line Python script; arxiv template \\
+Verification & 385 & 7 & Three-tier citation verification: abstract, full-text, metadata \\
+Review & 600 & 8 & Seven-step revision workflow with PDF annotation extraction and \texttt{latexdiff} \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 \begin{figure}[t]
 \centering
@@ -154,82 +300,67 @@ This architecture is realized as a Claude Code plugin---a directory-based extens
 \label{fig:architecture}
 \end{figure}
 
-\subsection{Skill Engines}
+\subsection{Pipeline Agent and Orchestration}
 
-The skill layer decomposes academic paper production into eight specialized engines, each implemented as a markdown-based knowledge module that the LLM loads at the appropriate pipeline phase. This design choice---encoding domain expertise as structured natural language instructions rather than programmatic logic---leverages the LLM's instruction-following capabilities while enabling non-programmer domain experts to modify and extend the system.
+The pipeline orchestrator is defined in \texttt{agents/paper-machine.md} (681~lines), a Markdown-based agent definition that specifies the LLM's role, operating principles, phase definitions, checkpoint protocols, and the complete eight-phase workflow. The agent begins with six operating principles that shape its autonomous behavior:
 
-\subsubsection{Literature Engine}
-The literature engine governs multi-database search, result processing, and bibliography management. It specifies search strategies including query decomposition (translating a research topic into 4--6 complementary search queries), multi-source triangulation (searching Semantic Scholar, OpenAlex, CrossRef, and arXiv in parallel), forward and backward snowballing from anchor papers, and deduplication algorithms. Through the academic-search MCP server, the engine can access over 400 million scholarly works across the four connected databases, performing federated search, citation analysis, and full-text retrieval for open-access papers.
+\begin{enumerate}
+\item \textbf{DO, don't ask.} Make decisions and present results rather than requesting permission.
+\item \textbf{Produce text, not plans.} Every phase produces deliverable output, not outlines.
+\item \textbf{Checkpoint, don't block.} Present work for approval at phase boundaries, then continue.
+\item \textbf{Be explicit about decisions.} State what was chosen and why; let the user override.
+\item \textbf{Save everything to files.} Every phase produces persistent artifacts the user can review.
+\item \textbf{Log everything.} Every phase transition, quality gate decision, and human override is recorded.
+\end{enumerate}
 
-\subsubsection{Theory Engine}
-The theory engine encodes knowledge about theoretical frameworks commonly used in information systems and management research. It provides a catalog of theories with selection heuristics that match theories to research contexts. The engine also provides gap formulation templates---structured patterns for articulating research gaps based on prior literature---and contribution framing guidelines aligned with \citeauthor{gregor2013positioning}'s (\citeyear{gregor2013positioning}) contribution taxonomy.
+The eight-phase pipeline executes sequentially, with each phase producing specific output artifacts that serve as inputs for subsequent phases. Table~\ref{tab:pipeline} maps each phase to its standalone slash command (if available) and output artifacts. Phases~1--6 form the core pipeline; Phase~7 (verification) and Phase~8 (revision) are optional and repeatable.
 
-\subsubsection{Method Engine}
-The method engine provides methodological templates for eight research approaches commonly used in IS and management research: systematic literature review (following the PRISMA protocol), design science research \citep{peffers2007dsrm}, case study research (following Yin's methodology), the Gioia method for qualitative process research, Mayring content analysis, grounded theory (open/axial/selective coding), PLS-SEM (measurement and structural model evaluation), and mixed methods designs. Each template specifies the required subsections, quality criteria, and reporting standards for that method.
-
-\subsubsection{Writing Engine}
-The writing engine is the core text generation component, providing structured templates for each section of an academic paper. Key templates include: a six-paragraph introduction formula (hook, academic context, gap, RQs, contribution, roadmap), paragraph-level templates for theoretical background sections, a five-block discussion formula (summary, findings, theoretical implications, practical implications, limitations), and citation integration patterns. These templates translate the tacit knowledge of experienced academic writers into explicit, LLM-executable instructions.
-
-\subsubsection{Figure Engine}
-The figure engine enables the generation of publication-quality diagrams and plots. It interfaces with the PaperBanana MCP server, which uses Google Gemini's multimodal capabilities to generate methodology diagrams, conceptual frameworks, and data visualizations from natural language descriptions. As a fallback, the engine can generate figures using Python's matplotlib library.
-
-\subsubsection{\LaTeX\ Engine}
-The \LaTeX\ engine handles the conversion of markdown drafts to submission-ready \LaTeX\ manuscripts. The core component is a 733-line Python converter (\texttt{md\_to\_latex.py}) that parses markdown structure, converts citations to \LaTeX\ bibliography commands, handles tables and figures, and wraps the content in an arxiv-style template.
-
-\subsubsection{Verification Engine}
-The verification engine addresses one of the most significant risks in LLM-generated academic writing: citation hallucination and misattribution. The engine implements a three-tier verification protocol: (a)~abstract-level verification, which checks whether the abstract of a cited paper is consistent with the claim attributed to it; (b)~full-text verification for open-access papers, which retrieves and searches the full paper for supporting evidence; and (c)~metadata verification, which confirms that cited papers actually exist and that bibliographic details are correct. The engine produces a verification report categorizing each citation as verified, plausible, mismatched, unverifiable (paywalled), or not found.
-
-\subsubsection{Review Engine}
-The review engine, introduced in v5.4.0, automates the co-author and reviewer revision loop. Given an annotated PDF or pasted reviewer comments, the engine executes a seven-step workflow: (1)~extract annotations from PDF markup using PyMuPDF, (2)~map each comment to its corresponding location in \texttt{paper.tex}, (3)~classify the required action (delete, replace, restructure, fix, shorten, or approve), (4)~present a structured change plan for human approval (quality gate), (5)~implement changes in dependency order, invoking other skill engines as needed, (6)~recompile \LaTeX\ and generate a visual diff via \texttt{latexdiff}, and (7)~document all changes in a revision log. The engine supports multiple revision rounds (Round~1~$\rightarrow$~2~$\rightarrow$~3) and handles multilingual comments. It was derived from four actual revision rounds on the companion paper \citep{blask2026creator}.
-
-\subsection{Orchestration Audit Trail}
-
-Since version 5.2.0, the system produces a structured orchestration log (\texttt{orchestration\_log.md}) that records the complete decision trace of each pipeline run. The log captures timestamps, acting agents (human or LLM), inputs and outputs at each phase transition, and quality gate decisions (approve, redirect, override). This audit trail operationalizes the concept of human-AI accountability in automated knowledge production: every decision---from which theoretical lens was selected to which citations were included---can be traced back to either the LLM's autonomous reasoning or the human researcher's checkpoint intervention. The log is designed to be included as supplementary material alongside published manuscripts, providing transparency about the degree of human involvement in the writing process.
-
-\subsection{MCP Integration and Tool Architecture}
-
-The system's external tool access is implemented through the Model Context Protocol (MCP), a standardized protocol for connecting LLM applications with data sources and services. Two MCP servers provide the system's tool capabilities:
-
-The \textbf{academic-search MCP server} exposes a unified API for querying four academic databases: Semantic Scholar (200M+ papers, TLDRs, citation graphs), OpenAlex (250M+ works, open-access metadata), CrossRef (150M+ works, DOI resolution), and arXiv (2.4M+ preprints, full-text access). The server provides functions for searching, snowballing (forward and backward citation traversal), multi-query batch search, deduplication, and export (BibTeX, CSV). This multi-source approach addresses a fundamental limitation of single-database tools: no individual academic database has comprehensive coverage, and search results vary significantly across sources.
-
-The \textbf{PaperBanana MCP server} provides AI-powered figure generation through Google Gemini's multimodal capabilities. The server accepts natural language descriptions of desired figures and source text, processes them through an iterative generation-refinement loop, and returns publication-quality PNG images.
-
-The MCP architecture provides several advantages over alternative integration approaches (e.g., custom API wrappers or function calling). First, MCP's standardized protocol enables tool discovery and composition without hard-coding tool interfaces. Second, MCP servers can run locally or remotely, supporting both offline use and cloud-based deployment. Third, the protocol supports schema-based input/output validation, reducing the risk of malformed tool invocations. Figure~\ref{fig:mcp} illustrates the three-tier MCP integration architecture.
-
-\begin{figure}[t]
+\begin{table}[t]
 \centering
-\includegraphics[width=0.95\textwidth]{figures/fig3_mcp_integration.png}
-\caption{Three-tier MCP integration architecture. The MCP Host (Claude Code IDE with LLM) communicates with two MCP servers through standardized tool call requests and structured responses. Each server validates inputs against JSON schemas before forwarding requests to external APIs. The academic-search server connects to four academic databases; the PaperBanana server connects to Google Gemini for figure generation.}
-\label{fig:mcp}
-\end{figure}
+\caption{Pipeline phases, entry points, and output artifacts. Phases~7--8 are optional and repeatable; all other phases execute sequentially through the \texttt{/write-paper} command.}
+\label{tab:pipeline}
+\begin{tabularx}{\textwidth}{cllX}
+\toprule
+\textbf{\#} & \textbf{Phase} & \textbf{Command} & \textbf{Output Artifacts} \\
+\midrule
+1 & Reconnaissance & \texttt{/search-papers} & \texttt{literature\_base.csv}, \texttt{references.bib} \\
+2 & Framing & --- & \texttt{framing.md}, \texttt{concept\_matrix.md} \\
+3 & Structure & --- & \texttt{paper\_structure.md} \\
+4 & Production & \texttt{/draft-section} & \texttt{draft.md} (complete manuscript) \\
+5 & Assembly & --- & \texttt{status\_report.md}, word count metrics \\
+6 & \LaTeX/PDF & \texttt{/export-latex} & \texttt{paper.tex}, \texttt{paper.pdf} \\
+7 & Verification & \texttt{/verify-citations} & \texttt{verification\_report.md} \\
+8 & Revision & \texttt{/respond-reviewers} & \texttt{revision\_log\_r\{N\}.md}, updated \texttt{.tex} \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
-\subsection{Pipeline Execution Model}
+Between each phase, the system presents a checkpoint summary to the user, reporting progress, key decisions, and identified issues. The user can approve (explicitly or by non-response), redirect (by providing alternative instructions), or override (by specifying particular choices). This checkpoint mechanism balances autonomous execution with human oversight at critical decision points.
 
-The system executes academic paper production through a six-phase pipeline with two optional additional phases, each triggered by a specific slash command or executed sequentially through the primary \texttt{/write-paper} command.
-
-\textbf{Phase~1: Reconnaissance.} The system decomposes the user's research topic into multiple search queries, executes federated searches across all connected databases, deduplicates results, and performs citation-based snowballing on the most influential papers.
-
-\textbf{Phase~2: Framing.} Based on the literature landscape, the system selects appropriate theoretical lenses, formulates the research gap, derives research questions, and drafts a contribution statement.
-
-\textbf{Phase~3: Structure.} The system constructs a concept matrix \citep{webster2002literature} mapping papers to key concepts, identifies over/under-researched areas, and designs the paper structure with section-level specifications.
-
-\textbf{Phase~4: Production.} The system writes the complete paper draft, section by section, following the templates defined in the writing engine.
-
-\textbf{Phase~5: Assembly.} The system compiles the draft, verifies citation-BibTeX consistency, generates word counts, and produces a self-assessment report.
-
-\textbf{Phase~6: \LaTeX/PDF Export.} The system converts the markdown draft to \LaTeX\ using the arxiv-style template, compiles the PDF, and validates the output.
-
-\textbf{Phase~7: Verification (Optional).} The system verifies citations against source material through the three-tier protocol described in Section~4.2.7.
-
-\textbf{Phase~8: Revision (Repeatable).} Given an annotated PDF from a co-author or pasted reviewer comments, the system extracts feedback, maps it to the manuscript, classifies required actions, presents a change plan for approval, implements changes, recompiles with \texttt{latexdiff} for visual change tracking, and documents all modifications. This phase can repeat across multiple revision rounds until acceptance.
-
-Between each phase, the system presents a checkpoint summary to the user, reporting progress, key decisions, and identified issues. The user can approve (explicitly or by non-response), redirect (by providing alternative instructions), or override (by specifying particular choices). This checkpoint mechanism balances the system's autonomous capabilities with human oversight at critical decision points.
+Since version~5.2.0, the system produces a structured orchestration log (\texttt{orchestration\_log.md}) that records the complete decision trace of each pipeline run. For each phase, the log captures: timestamp, acting agent (human or LLM), action performed, key metrics (papers found, words written, sections completed), and output artifacts. At quality gates, the log records the gate decision (approved, redirected, rejected), the orchestrator's verbatim feedback, and any scope changes. Mid-phase interventions---where the human overrides or redirects the LLM during execution---are logged separately. This audit trail operationalizes human-AI accountability in automated knowledge production: every decision can be traced to either the LLM's autonomous reasoning or the human researcher's checkpoint intervention. The log is designed for publication alongside manuscripts as supplementary material.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/fig2_pipeline_flow.png}
 \caption{The eight-phase pipeline of the Open Academic Paper Machine with human quality-gate checkpoints. Each phase is executed by specialized skill engines and produces persistent artifacts. Phases~7 (verification) and~8 (revision) are optional and repeatable.}
 \label{fig:pipeline}
+\end{figure}
+
+\subsection{MCP Integration and Tool Architecture}
+
+The system's external tool access is implemented through the Model Context Protocol (MCP), a standardized protocol for connecting LLM applications with data sources and services. Two MCP servers, both distributed as Python packages on PyPI, provide the system's external capabilities.
+
+The \textbf{academic-search MCP server} (\texttt{pip install academic-search-mcp}) exposes a unified API for querying four academic databases: Semantic Scholar (200M+ papers, TLDRs, citation graphs), OpenAlex (250M+ works, open-access metadata), CrossRef (150M+ works, DOI resolution), and arXiv (2.4M+ preprints, full-text access). The server provides functions for single-source and federated search, forward and backward snowballing (citation traversal), multi-query batch search with deduplication, and export to BibTeX and CSV. This multi-source approach addresses a fundamental limitation of single-database tools: no individual academic database has comprehensive coverage, and search results vary significantly across sources.
+
+The \textbf{PaperBanana MCP server} (\texttt{pip install paperbanana}) provides AI-powered figure generation through Google Gemini's multimodal capabilities. The server accepts natural language descriptions and source text, processes them through an iterative generation-refinement loop, and returns publication-quality PNG images. A Google API key is required and injected via the plugin manifest's environment variable configuration (cf.\ Listing~\ref{lst:manifest}).
+
+The MCP architecture provides several advantages over alternative integration approaches (e.g., custom API wrappers or direct function calling). First, MCP's standardized protocol enables tool discovery and schema-based input validation without hard-coding tool interfaces. Second, MCP servers run as local processes started by the host environment, supporting reproducible offline development. Third, the decoupled architecture allows independent versioning of the plugin and its tool servers. Figure~\ref{fig:mcp} illustrates the three-tier MCP integration architecture.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/fig3_mcp_integration.png}
+\caption{Three-tier MCP integration architecture. The MCP Host (Claude Code IDE with LLM) communicates with two MCP servers through standardized tool call requests and structured responses. Each server validates inputs against JSON schemas before forwarding requests to external APIs. The academic-search server connects to four academic databases; the PaperBanana server connects to Google Gemini for figure generation.}
+\label{fig:mcp}
 \end{figure}
 
 
