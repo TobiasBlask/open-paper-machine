@@ -47,7 +47,7 @@
 \maketitle
 
 \begin{abstract}
-The production of academic papers remains one of the most labor-intensive activities in scholarly research, typically requiring 60--80 hours per manuscript across literature search, theoretical framing, drafting, revision, and formatting. While recent advances in large language model (LLM)-based scientific agents have demonstrated considerable capabilities in automating experimental research, the complementary challenge of automating the scholarly \emph{writing} pipeline---from literature search to compiled manuscript---has received comparatively little attention. In this paper, we present the Open Academic Paper Machine, an open-source plugin for the Claude Code development environment that autonomously executes the full academic paper production pipeline. The system comprises eight modular skill engines (literature, theory, method, writing, figure, verification, \LaTeX, and review), two Model Context Protocol (MCP) servers for academic database access and AI figure generation, and an eight-phase pipeline with human-in-the-loop checkpoints. Following a Design Science Research methodology \citep{peffers2007dsrm}, we describe the system's architecture, articulate five design principles for LLM-based scholarly automation, and evaluate the artifact through a self-referential case study---a companion position paper \citep{blask2026creator} that was orchestrated through human-AI interaction using the system. Our findings demonstrate that while the system can produce structurally complete, well-cited academic manuscripts, the quality of the final output depends critically on human oversight at each checkpoint. We contribute to the emerging discourse on AI-augmented knowledge production by providing both a functional open-source artifact and generalizable design knowledge for the information systems community.
+The production of academic papers remains one of the most labor-intensive activities in scholarly research, typically requiring 60--80 hours per manuscript across literature search, theoretical framing, drafting, revision, and formatting. While recent advances in large language model (LLM)-based scientific agents have demonstrated considerable capabilities in automating experimental research, the complementary challenge of automating the scholarly \emph{writing} pipeline---from literature search to compiled manuscript---has received comparatively little attention. In this paper, we present the Open Academic Paper Machine, an open-source plugin for the Claude Code development environment that autonomously executes the full academic paper production pipeline. The system comprises fourteen modular skill engines---eight for the core pipeline (literature, theory, method, writing, figure, verification, \LaTeX, and review) and six for extended capabilities (screening, peer review, positioning, submission, presentation, and co-author management)---two Model Context Protocol (MCP) servers for academic database access and AI figure generation, and an eight-phase pipeline with human-in-the-loop checkpoints. Following a Design Science Research methodology \citep{peffers2007dsrm}, we describe the system's architecture, articulate five design principles for LLM-based scholarly automation, and evaluate the artifact through a self-referential case study---a companion position paper \citep{blask2026creator} that was orchestrated through human-AI interaction using the system. Our findings demonstrate that while the system can produce structurally complete, well-cited academic manuscripts, the quality of the final output depends critically on human oversight at each checkpoint. We contribute to the emerging discourse on AI-augmented knowledge production by providing both a functional open-source artifact and generalizable design knowledge for the information systems community.
 
 \medskip
 \noindent\textbf{Keywords:} Large Language Models, Academic Writing Automation, Design Science Research, Model Context Protocol, AI Agents, Scholarly Communication
@@ -72,7 +72,7 @@ Against this backdrop, we pose the following research questions:
 
 \noindent To address these questions, we follow a Design Science Research (DSR) methodology \citep{peffers2007dsrm} and present the Open Academic Paper Machine---an open-source plugin for the Claude Code development environment that orchestrates the full paper production pipeline.
 
-This paper makes three contributions. First, we present a functional, open-source artifact---the Open Academic Paper Machine v5.4.0---that autonomously executes six core phases of academic paper production: literature reconnaissance, theoretical framing, structure design, draft production, assembly, and \LaTeX/PDF compilation, with optional phases for citation verification and automated revision. While prior systems such as The AI Scientist \citep{lu2024ai_scientist} automate experimental research pipelines including paper generation, our system is, to our knowledge, the first to focus specifically on the \emph{scholarly writing} pipeline---literature synthesis, theoretical framing, and structured argumentation---as an integrated automation target. Second, we articulate five design principles for LLM-based scholarly automation---phase decomposition, skill modularity, template-driven generation, human-in-the-loop checkpoints, and multi-source triangulation---that extend the body of knowledge on tool-augmented LLM architectures to the domain of academic knowledge production. Third, we provide an empirical demonstration through a self-referential case study: a companion position paper \citep{blask2026creator} orchestrated through human-AI interaction using the system, which serves as both proof of concept and basis for critical evaluation.
+This paper makes three contributions. First, we present a functional, open-source artifact---the Open Academic Paper Machine v5.5.0---that autonomously executes six core phases of academic paper production: literature reconnaissance, theoretical framing, structure design, draft production, assembly, and \LaTeX/PDF compilation, with optional phases for citation verification and automated revision. While prior systems such as The AI Scientist \citep{lu2024ai_scientist} automate experimental research pipelines including paper generation, our system is, to our knowledge, the first to focus specifically on the \emph{scholarly writing} pipeline---literature synthesis, theoretical framing, and structured argumentation---as an integrated automation target. Second, we articulate five design principles for LLM-based scholarly automation---phase decomposition, skill modularity, template-driven generation, human-in-the-loop checkpoints, and multi-source triangulation---that extend the body of knowledge on tool-augmented LLM architectures to the domain of academic knowledge production. Third, we provide an empirical demonstration through a self-referential case study: a companion position paper \citep{blask2026creator} orchestrated through human-AI interaction using the system, which serves as both proof of concept and basis for critical evaluation.
 
 The remainder of this paper is structured as follows. Section~2 reviews related work on AI-based scientific agents, AI-assisted academic writing, and tool-augmented LLMs. Section~3 describes our Design Science Research methodology. Section~4 presents the system design in detail. Section~5 demonstrates the system through the companion position paper case study. Section~6 discusses findings, design principles, implications, and limitations. Section~7 concludes.
 
@@ -137,7 +137,7 @@ We derive the following design objectives for the artifact:
 
 \subsection{Design and Development Process}
 
-The Open Academic Paper Machine was developed iteratively between October 2024 and March 2026. The initial version (v1.0) implemented basic literature search and draft generation as a Claude Code custom command. Subsequent versions added theoretical framing templates (v2.0), method-specific writing engines (v3.0), the MCP-based academic search server (v4.0), AI figure generation (v4.5), citation verification (v5.0), comprehensive \LaTeX\ export (v5.3.0), and automated revision loops with PDF annotation extraction (v5.4.0). Each version was evaluated by the author through test runs on diverse research topics across information systems, computer science, and management research. The system was publicly released under the MIT License on GitHub.\footnote{\url{https://github.com/TobiasBlask/open-paper-machine}}
+The Open Academic Paper Machine was developed iteratively between October 2024 and March 2026. The initial version (v1.0) implemented basic literature search and draft generation as a Claude Code custom command. Subsequent versions added theoretical framing templates (v2.0), method-specific writing engines (v3.0), the MCP-based academic search server (v4.0), AI figure generation (v4.5), citation verification (v5.0), comprehensive \LaTeX\ export (v5.3.0), automated revision loops with PDF annotation extraction (v5.4.0), and six additional skill engines for screening, simulated peer review, positioning analysis, submission preparation, presentation generation, and co-author management (v5.5.0). Each version was evaluated by the author through test runs on diverse research topics across information systems, computer science, and management research. The system was publicly released under the MIT License on GitHub.\footnote{\url{https://github.com/TobiasBlask/open-paper-machine}}
 
 The development drew on several kernel theories: the ReAct paradigm \citep{yao2022react} informed the interleaving of reasoning and tool use; the concept of skill-based agent architectures \citep{ferrag2025llm_agents} motivated the decomposition into specialized engines; and the MCP standard provided the protocol layer for external tool integration. The writing templates were informed by established academic writing guidance, particularly \citeauthor{webster2002literature}'s (\citeyear{webster2002literature}) framework for literature reviews and standard structures for DSR papers \citep{peffers2007dsrm,gregor2013positioning}.
 
@@ -154,7 +154,7 @@ We assess the output against five criteria: (1) structural completeness (all exp
 
 \subsection{Platform Foundation: Claude Code Plugins}
 
-The Open Academic Paper Machine (version~5.4.0) is built on Claude Code, Anthropic's AI-powered software development environment that combines the Claude LLM with a terminal-based agentic interface supporting autonomous multi-turn reasoning, file system access, and shell execution. Claude Code provides a \emph{plugin architecture} that allows developers to extend the system with custom skills, agents, commands, and tool integrations.\footnote{See \url{https://code.claude.com/docs/en/plugins} for the full plugin specification.} Plugins are directory-based extensions, each identified by a manifest file (\texttt{.claude-plugin/plugin.json}) that declares the plugin's name, version, capabilities, and MCP server dependencies. When a plugin is loaded, Claude Code automatically starts the declared MCP servers and makes skills available under a namespaced prefix (e.g., \texttt{/open-academic-paper-machine:write-paper}).
+The Open Academic Paper Machine (version~5.5.0) is built on Claude Code, Anthropic's AI-powered software development environment that combines the Claude LLM with a terminal-based agentic interface supporting autonomous multi-turn reasoning, file system access, and shell execution. Claude Code provides a \emph{plugin architecture} that allows developers to extend the system with custom skills, agents, commands, and tool integrations.\footnote{See \url{https://code.claude.com/docs/en/plugins} for the full plugin specification.} Plugins are directory-based extensions, each identified by a manifest file (\texttt{.claude-plugin/plugin.json}) that declares the plugin's name, version, capabilities, and MCP server dependencies. When a plugin is loaded, Claude Code automatically starts the declared MCP servers and makes skills available under a namespaced prefix (e.g., \texttt{/open-academic-paper-machine:write-paper}).
 
 The plugin architecture was chosen over two alternatives: (a)~a standalone application with direct API access to Claude, and (b)~a collection of independent prompt templates. The plugin approach offers three advantages. First, it inherits Claude Code's full tool-use and agentic capabilities---file system access, shell execution, multi-turn reasoning---without reimplementing them. Second, it provides a standardized extension mechanism with namespace isolation, version management, and marketplace distribution, making the system shareable and reproducible. Third, the plugin's skill and agent definitions are written in Markdown, enabling domain experts without programming experience to inspect, modify, and extend the system's knowledge base. The complete system is publicly available at \url{https://github.com/TobiasBlask/open-paper-machine} under the MIT License.
 
@@ -162,30 +162,43 @@ The plugin architecture was chosen over two alternatives: (a)~a standalone appli
 
 The plugin is organized as a directory tree following the Claude Code plugin specification. Listing~\ref{lst:tree} shows the top-level structure with its five functional directories.
 
-\begin{lstlisting}[caption={Directory structure of the Open Academic Paper Machine plugin (v5.4.0). The system comprises 8 skill engines, 8 slash commands, 1 pipeline agent, 2 utility scripts, and 1 \LaTeX\ template.},label={lst:tree},float=t]
+\begin{lstlisting}[caption={Directory structure of the Open Academic Paper Machine plugin (v5.5.0). The system comprises 14 skill engines, 15 slash commands, 1 pipeline agent, 2 utility scripts, and 1 \LaTeX\ template.},label={lst:tree},float=t]
 open-paper-machine/
 +-- .claude-plugin/
 |   +-- plugin.json            # Plugin manifest
 +-- agents/
-|   +-- paper-machine.md       # Pipeline agent (681 lines)
-+-- commands/                   # 8 slash commands
-|   +-- write-paper.md          #   /write-paper  -> full pipeline
-|   +-- search-papers.md        #   /search-papers -> Phase 1
-|   +-- draft-section.md        #   /draft-section -> Phase 4
-|   +-- export-latex.md         #   /export-latex  -> Phase 6
-|   +-- verify-citations.md     #   /verify-citations -> Phase 7
-|   +-- respond-reviewers.md    #   /respond-reviewers -> Phase 8
-|   +-- generate-figure.md      #   /generate-figure
-|   +-- generate-plot.md        #   /generate-plot
-+-- skills/                     # 8 domain-specific engines
-|   +-- literature-engine/SKILL.md   (222 lines)
-|   +-- theory-engine/SKILL.md       (178 lines)
-|   +-- method-engine/SKILL.md       (362 lines)
-|   +-- writing-engine/SKILL.md      (348 lines)
-|   +-- figure-engine/SKILL.md       (218 lines)
-|   +-- latex-engine/SKILL.md        (290 lines)
-|   +-- verification-engine/SKILL.md (385 lines)
-|   +-- review-engine/SKILL.md       (600 lines)
+|   +-- paper-machine.md       # Pipeline agent (706 lines)
++-- commands/                   # 15 slash commands
+|   +-- write-paper.md          # /write-paper  -> full pipeline
+|   +-- search-papers.md        # /search-papers -> Phase 1
+|   +-- screen-papers.md        # /screen-papers -> SLR screening
+|   +-- draft-section.md        # /draft-section -> Phase 4
+|   +-- export-latex.md         # /export-latex  -> Phase 6
+|   +-- verify-citations.md     # /verify-citations -> Phase 7
+|   +-- respond-reviewers.md    # /respond-reviewers -> Phase 8
+|   +-- review-paper.md         # /review-paper -> simulated review
+|   +-- analyze-positioning.md  # /analyze-positioning
+|   +-- analyze-writing.md      # /analyze-writing -> style analysis
+|   +-- monitor-literature.md   # /monitor-literature
+|   +-- prepare-submission.md   # /prepare-submission
+|   +-- generate-figure.md      # /generate-figure
+|   +-- generate-plot.md        # /generate-plot
+|   +-- generate-slides.md      # /generate-slides
++-- skills/                     # 14 domain-specific engines
+|   +-- literature-engine/       (346 lines)
+|   +-- theory-engine/           (178 lines)
+|   +-- method-engine/           (797 lines)
+|   +-- writing-engine/          (450 lines)
+|   +-- figure-engine/           (218 lines)
+|   +-- latex-engine/            (290 lines)
+|   +-- verification-engine/     (385 lines)
+|   +-- review-engine/           (600 lines)
+|   +-- screening-engine/        (383 lines)
+|   +-- peer-review-engine/      (506 lines)
+|   +-- positioning-engine/      (286 lines)
+|   +-- submission-engine/       (389 lines)
+|   +-- presentation-engine/     (273 lines)
+|   +-- coauthor-engine/         (179 lines)
 +-- scripts/
 |   +-- md_to_latex.py          # Markdown->LaTeX (732 lines)
 |   +-- extract_annotations.py  # PDF annotation extractor
@@ -199,7 +212,7 @@ The plugin manifest (Listing~\ref{lst:manifest}) declares the system's identity 
 {
   "name": "open-academic-paper-machine",
   "description": "Autonomous academic paper production system",
-  "version": "5.4.0",
+  "version": "5.5.0",
   "author": { "name": "Prof. Dr. Tobias Blask" },
   "license": "MIT",
   "mcpServers": {
@@ -236,7 +249,7 @@ Do not ask for confirmation to start.
 
 \subsection{Skill Engine Architecture}\label{sec:skill_engines}
 
-Each skill engine is implemented as a single \texttt{SKILL.md} file: a Markdown document with YAML frontmatter that specifies when the skill should be activated, followed by structured instructions that encode domain expertise as fill-in-the-blank templates, decision heuristics, and quality criteria. Claude Code's skill system loads these files contextually---the writing engine is activated when the user drafts or revises text, the literature engine when searches are needed---enabling on-demand access to domain knowledge without consuming the LLM's context window with all 3,300 lines simultaneously.
+Each skill engine is implemented as a single \texttt{SKILL.md} file: a Markdown document with YAML frontmatter that specifies when the skill should be activated, followed by structured instructions that encode domain expertise as fill-in-the-blank templates, decision heuristics, and quality criteria. Claude Code's skill system loads these files contextually---the writing engine is activated when the user drafts or revises text, the literature engine when searches are needed---enabling on-demand access to domain knowledge without consuming the LLM's context window with all 5,300 lines simultaneously.
 
 This design exploits the LLM's instruction-following capabilities: rather than implementing academic writing logic in procedural code, the system encodes it as structured natural language that the LLM interprets and executes. Listing~\ref{lst:skill} illustrates this approach with an excerpt from the writing engine's introduction template---the six-paragraph formula for opening an academic paper. The template uses bracketed placeholders (\texttt{[...]}) for content that varies by paper while the structural scaffolding (paragraph roles, transition patterns, gap formulation strategies) remains fixed. This template-driven approach operationalizes tacit expert knowledge: experienced academic writers internalize these conventions over years of practice; the template makes them explicit and LLM-executable.
 
@@ -271,24 +284,35 @@ Template (3-contribution pattern):
   [contribution 3 -- practical].
 \end{lstlisting}
 
-Table~\ref{tab:engines} summarizes all eight skill engines. Three engines deserve additional technical detail. The \emph{method engine} (362~lines) provides complete templates for eight research methodologies commonly used in IS research: systematic literature review (PRISMA protocol), design science research \citep{peffers2007dsrm}, case study (Yin), Gioia method, Mayring content analysis, grounded theory, PLS-SEM, and mixed methods. The \emph{verification engine} (385~lines) implements a three-tier citation verification protocol: (a)~abstract-level verification against the cited paper's abstract, (b)~full-text verification for open-access papers, and (c)~metadata verification confirming that cited works exist with correct bibliographic details. The \emph{review engine} (600~lines, the largest), introduced in v5.4.0, automates a seven-step revision workflow: extract PDF annotations, map comments to \texttt{paper.tex} locations, classify actions, present a change plan for approval, implement changes, recompile with \texttt{latexdiff} for visual diff generation, and document all modifications in a revision log.
+Table~\ref{tab:engines} summarizes all fourteen skill engines, organized into eight core pipeline engines and six extended-capability engines. Among the core engines, the \emph{method engine} (797~lines, the largest) provides complete templates for thirteen research methodologies commonly used in IS research: systematic literature review (PRISMA protocol), design science research \citep{peffers2007dsrm}, case study (Yin), Gioia method, Mayring content analysis, grounded theory, PLS-SEM, mixed methods, experiment/RCT, action research, ethnography, Delphi study, and simulation---as well as research data management guidance (FAIR principles, data management plans, data availability statements). The \emph{verification engine} (385~lines) implements a three-tier citation verification protocol: (a)~abstract-level verification against the cited paper's abstract, (b)~full-text verification for open-access papers, and (c)~metadata verification confirming that cited works exist with correct bibliographic details. The \emph{review engine} (600~lines), introduced in v5.4.0, automates a seven-step revision workflow: extract PDF annotations, map comments to \texttt{paper.tex} locations, classify actions, present a change plan for approval, implement changes, recompile with \texttt{latexdiff} for visual diff generation, and document all modifications in a revision log.
+
+Version~5.5.0 added six extended-capability engines that complement the core pipeline. The \emph{screening engine} (383~lines) implements PRISMA-compliant title/abstract and full-text screening for systematic literature reviews, including quality assessment checklists and automated PRISMA flow diagram generation. The \emph{peer-review engine} (506~lines) simulates double-blind peer review by generating two independent reviewer reports calibrated to the standards of top IS/CS venues, producing output that feeds directly into the review engine for systematic revision. The \emph{positioning engine} (286~lines) analyzes the paper's differentiation from the closest related work by constructing a multi-dimensional comparison matrix. The \emph{submission engine} (389~lines) prepares venue-specific submission packages including anonymization checks, cover letter generation, and reviewer suggestions. The \emph{presentation engine} (273~lines) generates conference slide decks with speaker notes from a completed manuscript. The \emph{co-author engine} (179~lines) tracks multi-author contributions using the CRediT taxonomy and documents the human-AI division of labor. Version~5.5.0 also extended the literature engine (222$\to$346~lines) with monitoring capabilities for living literature reviews, and the writing engine (348$\to$450~lines) with a style analysis mode covering eight quality metrics (passive voice ratio, weak openings, hedging balance, sentence length variation, word repetitions, paragraph consistency, transition quality, and citation integration style).
 
 \begin{table}[t]
 \centering
-\caption{Skill engine summary. Each engine is a single \texttt{SKILL.md} file encoding domain expertise as structured natural language instructions. Total knowledge base: approximately 3,300 lines of Markdown.}
+\caption{Skill engine summary. Each engine is a single \texttt{SKILL.md} file encoding domain expertise as structured natural language instructions. Total knowledge base: approximately 5,300 lines of Markdown across 14 engines.}
 \label{tab:engines}
 \begin{tabularx}{\textwidth}{llcX}
 \toprule
 \textbf{Engine} & \textbf{Lines} & \textbf{Phase} & \textbf{Key Capability} \\
 \midrule
-Literature & 222 & 1 & Multi-database search, snowballing, deduplication \\
+\multicolumn{4}{l}{\emph{Core pipeline engines}} \\
+Literature & 346 & 1 & Multi-database search, snowballing, deduplication, monitoring \\
 Theory & 178 & 2 & Theory catalog with selection heuristics, gap formulation, contribution framing \\
-Method & 362 & 2--3 & Templates for 8 research methods (SLR, DSR, case study, Gioia, Mayring, grounded theory, PLS-SEM, mixed) \\
-Writing & 348 & 4 & Section-level templates: 6-paragraph introduction, 5-block discussion, citation integration \\
+Method & 797 & 2--3 & Templates for 13 research methods (SLR, DSR, case study, Gioia, Mayring, grounded theory, PLS-SEM, mixed, experiment, action research, ethnography, Delphi, simulation) + RDM \\
+Writing & 450 & 4 & Section templates, 6-paragraph introduction, 5-block discussion, style analysis (8 metrics) \\
 Figure & 218 & 4 & AI figure generation via PaperBanana; matplotlib fallback \\
 \LaTeX & 290 & 6 & Markdown-to-\LaTeX\ conversion via 732-line Python script; arxiv template \\
 Verification & 385 & 7 & Three-tier citation verification: abstract, full-text, metadata \\
 Review & 600 & 8 & Seven-step revision workflow with PDF annotation extraction and \texttt{latexdiff} \\
+\midrule
+\multicolumn{4}{l}{\emph{Extended-capability engines (v5.5.0)}} \\
+Screening & 383 & 1+ & PRISMA-compliant SLR screening pipeline with quality assessment \\
+Peer Review & 506 & 5+ & Simulated double-blind review (2 independent reviewers, venue-calibrated) \\
+Positioning & 286 & 2+ & Differentiation matrix, unique positioning analysis \\
+Submission & 389 & 6+ & Venue-specific formatting, anonymization, cover letter, reviewer suggestions \\
+Presentation & 273 & 6+ & Conference slide generation with speaker notes (Marp-compatible) \\
+Co-Author & 179 & --- & CRediT contribution tracking, human-AI labor documentation \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -296,13 +320,13 @@ Review & 600 & 8 & Seven-step revision workflow with PDF annotation extraction a
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/fig1_system_architecture.png}
-\caption{System architecture of the Open Academic Paper Machine (v5.4.0) showing the four-layer design: orchestration layer (pipeline agent with human checkpoints via eight slash commands), skill engine layer (eight specialized engines including eight research method templates), tool layer (two MCP servers distributed via PyPI connecting to external APIs), and output layer (structured artifacts per phase). The orchestration audit trail (\texttt{orchestration\_log.md}) records timestamps, actors, and quality gate decisions across all phases.}
+\caption{System architecture of the Open Academic Paper Machine (v5.5.0) showing the four-layer design: orchestration layer (pipeline agent with human checkpoints via fifteen slash commands), skill engine layer (fourteen specialized engines---eight core plus six extended---including thirteen research method templates), tool layer (two MCP servers distributed via PyPI connecting to external APIs), and output layer (structured artifacts per phase). The orchestration audit trail (\texttt{orchestration\_log.md}) records timestamps, actors, and quality gate decisions across all phases.}
 \label{fig:architecture}
 \end{figure}
 
 \subsection{Pipeline Agent and Orchestration}
 
-The pipeline orchestrator is defined in \texttt{agents/paper-machine.md} (681~lines), a Markdown-based agent definition that specifies the LLM's role, operating principles, phase definitions, checkpoint protocols, and the complete eight-phase workflow. The agent begins with six operating principles that shape its autonomous behavior:
+The pipeline orchestrator is defined in \texttt{agents/paper-machine.md} (706~lines), a Markdown-based agent definition that specifies the LLM's role, operating principles, phase definitions, checkpoint protocols, and the complete eight-phase workflow. Since version~5.5.0, the agent proactively suggests relevant extended-capability engines at appropriate pipeline stages: screening after Phase~1 (Reconnaissance), positioning analysis after Phase~2 (Framing), and the full suite of post-production tools---simulated peer review, submission preparation, style analysis, and presentation generation---after Phase~6. The agent begins with six operating principles that shape its autonomous behavior:
 
 \begin{enumerate}
 \item \textbf{DO, don't ask.} Make decisions and present results rather than requesting permission.
@@ -317,7 +341,7 @@ The eight-phase pipeline executes sequentially, with each phase producing specif
 
 \begin{table}[t]
 \centering
-\caption{Pipeline phases, entry points, and output artifacts. Phases~7--8 are optional and repeatable; all other phases execute sequentially through the \texttt{/write-paper} command.}
+\caption{Pipeline phases, entry points, and output artifacts. Phases~7--8 are optional and repeatable; all other phases execute sequentially through the \texttt{/write-paper} command. Seven additional standalone commands (bottom) provide extended capabilities usable at any stage.}
 \label{tab:pipeline}
 \begin{tabularx}{\textwidth}{cllX}
 \toprule
@@ -331,6 +355,14 @@ The eight-phase pipeline executes sequentially, with each phase producing specif
 6 & \LaTeX/PDF & \texttt{/export-latex} & \texttt{paper.tex}, \texttt{paper.pdf} \\
 7 & Verification & \texttt{/verify-citations} & \texttt{verification\_report.md} \\
 8 & Revision & \texttt{/respond-reviewers} & \texttt{revision\_log\_r\{N\}.md}, updated \texttt{.tex} \\
+\midrule
+--- & Screening & \texttt{/screen-papers} & \texttt{literature\_base\_screened.csv}, PRISMA diagram \\
+--- & Peer Review & \texttt{/review-paper} & \texttt{simulated\_reviews.md} \\
+--- & Positioning & \texttt{/analyze-positioning} & \texttt{positioning\_analysis.md} \\
+--- & Style Analysis & \texttt{/analyze-writing} & \texttt{writing\_analysis.md} \\
+--- & Submission & \texttt{/prepare-submission} & Anonymized PDF, cover letter, checklist \\
+--- & Literature Monitor & \texttt{/monitor-literature} & Updated \texttt{literature\_base.csv} \\
+--- & Slides & \texttt{/generate-slides} & \texttt{presentation/presentation.md} \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -342,7 +374,7 @@ Since version~5.2.0, the system produces a structured orchestration log (\texttt
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/fig2_pipeline_flow.png}
-\caption{The eight-phase pipeline of the Open Academic Paper Machine with human quality-gate checkpoints. Each phase is executed by specialized skill engines and produces persistent artifacts. Phases~7 (verification) and~8 (revision) are optional and repeatable.}
+\caption{The eight-phase pipeline of the Open Academic Paper Machine (v5.5.0) with human quality-gate checkpoints. Each phase is executed by specialized skill engines and produces persistent artifacts. Since v5.5.0, the pipeline agent suggests extended-capability tools at relevant stages (screening after Phase~1, positioning after Phase~2, and the post-production suite after Phase~6). Phases~7 (verification) and~8 (revision) are optional and repeatable.}
 \label{fig:pipeline}
 \end{figure}
 
@@ -413,7 +445,7 @@ Based on our experience designing, developing, and evaluating the Open Academic 
 
 \textbf{DP1: Phase Decomposition.} \emph{Complex scholarly workflows should be decomposed into sequential, checkpointed phases that mirror the natural stages of academic paper production.} The eight-phase pipeline reflects the actual workflow of experienced researchers. Decomposition constrains the LLM's context to a manageable scope at each step (reducing hallucination and drift) and creates natural intervention points for human oversight.
 
-\textbf{DP2: Skill Modularity.} \emph{Domain expertise should be encapsulated in modular, independently maintainable skill engines that the LLM loads on demand.} The eight-engine architecture separates concerns, enabling domain experts to contribute knowledge to specific engines without understanding the full system, and supporting recomposition for different use cases.
+\textbf{DP2: Skill Modularity.} \emph{Domain expertise should be encapsulated in modular, independently maintainable skill engines that the LLM loads on demand.} The fourteen-engine architecture separates concerns, enabling domain experts to contribute knowledge to specific engines without understanding the full system, and supporting recomposition for different use cases.
 
 \textbf{DP3: Template-Driven Generation.} \emph{Quality standards for scholarly output should be operationalized as explicit, structured templates that constrain LLM generation.} Templates serve as guardrails that channel the LLM's generation toward outputs conforming to academic conventions. Without such templates, LLM-generated academic text tends toward superficial, blog-like prose.
 
@@ -430,7 +462,7 @@ Based on our experience designing, developing, and evaluating the Open Academic 
 \textbf{Principle} & \textbf{Rationale} & \textbf{Implementation} \\
 \midrule
 DP1: Phase Decomposition & Manage complexity, enable oversight & 8-phase pipeline with checkpoints \\
-DP2: Skill Modularity & Separation of concerns, extensibility & 8 independent skill engines \\
+DP2: Skill Modularity & Separation of concerns, extensibility & 14 independent skill engines \\
 DP3: Template-Driven Generation & Quality assurance, convention adherence & Writing templates for each section type \\
 DP4: Human-in-the-Loop Checkpoints & Balance autonomy with oversight & Checkpoint summaries between phases \\
 DP5: Multi-Source Triangulation & Coverage, reliability, reduced bias & 4-database federated search \\
@@ -463,7 +495,7 @@ Future research should pursue three directions: (1) multi-case evaluation with s
 \section{Conclusion}
 % ============================================================================
 
-This paper has presented the Open Academic Paper Machine, an open-source plugin for the Claude Code development environment that autonomously executes the full academic paper production pipeline. The system comprises eight modular skill engines, two MCP servers for external tool access, and an eight-phase pipeline with human-in-the-loop checkpoints, covering the complete path from research topic to compiled \LaTeX/PDF manuscript.
+This paper has presented the Open Academic Paper Machine, an open-source plugin for the Claude Code development environment that autonomously executes the full academic paper production pipeline. The system comprises fourteen modular skill engines---eight for the core pipeline and six for extended capabilities such as simulated peer review, SLR screening, and submission preparation---two MCP servers for external tool access, and an eight-phase pipeline with human-in-the-loop checkpoints, covering the complete path from research topic to compiled \LaTeX/PDF manuscript.
 
 Following a Design Science Research methodology, we described the system's architecture, demonstrated its capabilities through a self-referential case study, and articulated five design principles for LLM-based scholarly automation. Our findings reveal a productive tension: the system can produce structurally complete, well-cited academic manuscripts---a notable capability given the complexity of academic writing conventions---yet the intellectual depth, theoretical originality, and critical reasoning of human researchers remain beyond its current reach.
 

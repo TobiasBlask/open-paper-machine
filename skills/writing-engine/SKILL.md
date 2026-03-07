@@ -346,3 +346,105 @@ Template:
 - "Es wurde untersucht..." statt "Ich habe untersucht..."
 - Gendern nach Vorgabe des Journals/der Konferenz
 - Fachbegriffe bei Erstverwendung definieren
+
+---
+
+## STYLE ANALYSIS MODE
+
+When activated via `/analyze-writing`, perform a **diagnostic analysis** (not a drafting task).
+Read the paper and evaluate each section against these metrics:
+
+### Metric 1: Passive Voice Ratio
+- **Target:** < 30% of sentences per section
+- **Detection:** Identify auxiliary + past participle patterns ("was conducted", "were analyzed", "has been shown")
+- **Note:** Some passive is acceptable (method sections often 40-50%). Flag only when overused in Introduction/Discussion.
+
+### Metric 2: Weak Openings
+Flag sentences beginning with:
+- "It is important to note that..."
+- "There are several..."
+- "In today's [fast-paced/digital/modern] world..."
+- "It should be mentioned that..."
+- "Many scholars have studied..."
+- "As everyone knows..."
+- "It goes without saying that..."
+- **Fix pattern:** Rewrite with subject-verb-object structure. Lead with the actor or finding.
+
+### Metric 3: Hedging Balance
+- **Under-hedging** (too assertive): "This proves...", "This clearly demonstrates...", "This is the first study to..."
+- **Over-hedging** (too timid): "It might possibly suggest that perhaps..."
+- **Target:** Appropriate hedging — "suggests", "indicates", "our findings are consistent with"
+- **Score:** Count hedge words per paragraph. < 1 = under-hedged, > 3 = over-hedged.
+
+### Metric 4: Sentence Length Variation
+- **Target:** Average 15-25 words per sentence, with variation (SD > 5 words)
+- **Problem signs:** All sentences same length (monotonous), sentences > 40 words (hard to parse), sequences of 5+ short sentences (choppy)
+- **Fix pattern:** Mix short declarative sentences with longer ones. Break sentences > 40 words.
+
+### Metric 5: Word/Phrase Repetitions
+- Flag the same non-trivial word used 3+ times in consecutive sentences
+- Flag the same sentence opener pattern used 3+ times in a paragraph
+- Exclude common academic terms (e.g., "study", "research", "findings")
+- **Fix pattern:** Use synonyms or restructure sentences
+
+### Metric 6: Paragraph Length
+- **Target:** 4-8 sentences per paragraph
+- **Problem signs:** Single-sentence paragraphs (underdeveloped), 10+ sentence paragraphs (needs splitting)
+- **Exception:** Method sections may have shorter procedural paragraphs
+
+### Metric 7: Transition Quality
+Between paragraphs, check for:
+- **Explicit transitions:** "Building on...", "In contrast...", "Furthermore...", "However..."
+- **Logical flow:** Does each paragraph's opening connect to the previous paragraph's closing?
+- **Section transitions:** Does each subsection end with a bridge to the next?
+- **Score:** Count paragraphs without any transition. Target: < 20%
+
+### Metric 8: Citation Integration Style
+- **Parenthetical citations:** "(Author, Year)" at sentence end — factual support
+- **Narrative citations:** "Author (Year) found that..." — when discussing a specific study
+- **Target ratio:** 60-70% parenthetical, 30-40% narrative (varies by section)
+- **Problem signs:** All parenthetical (reads like a list), all narrative (reads like a book report), citation clusters of 5+ references (reviewer may question if author read all)
+
+### Output Format
+
+```markdown
+# Writing Quality Analysis
+
+**Paper:** [filename]
+**Analyzed:** [date]
+**Total word count:** [N]
+
+## Section Scores
+
+| Section | Passive Voice | Weak Opens | Hedging | Sent. Length | Repetitions | Para. Length | Transitions | Citation Style | Overall |
+|---------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Abstract | [%] | [n] | [score] | [avg±sd] | [n] | [avg] | — | [ratio] | [★/★★/★★★] |
+| Introduction | [%] | [n] | [score] | [avg±sd] | [n] | [avg] | [%] | [ratio] | [★/★★/★★★] |
+| Theory | [%] | [n] | [score] | [avg±sd] | [n] | [avg] | [%] | [ratio] | [★/★★/★★★] |
+| Method | [%] | [n] | [score] | [avg±sd] | [n] | [avg] | [%] | [ratio] | [★/★★/★★★] |
+| Results | [%] | [n] | [score] | [avg±sd] | [n] | [avg] | [%] | [ratio] | [★/★★/★★★] |
+| Discussion | [%] | [n] | [score] | [avg±sd] | [n] | [avg] | [%] | [ratio] | [★/★★/★★★] |
+
+★★★ = Strong | ★★ = Adequate | ★ = Needs Work
+
+## Specific Improvements
+
+### [Section Name] — [Overall Score]
+
+**Issue 1: [Metric name]**
+> "[Problematic text from the paper]"
+→ Suggested rewrite: "[Improved version]"
+Reason: [brief explanation]
+
+**Issue 2: [Metric name]**
+> "[Problematic text]"
+→ Suggested rewrite: "[Improved version]"
+
+[... repeat for each issue found ...]
+
+## Summary
+
+**Strengths:** [2-3 strengths across the paper]
+**Priority improvements:** [top 3 issues to fix first]
+**Estimated revision effort:** [light / moderate / substantial]
+```

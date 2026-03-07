@@ -182,6 +182,9 @@ Preliminary gaps spotted:
 
 📁 Saved: literature_base.csv, references.bib
 
+💡 For systematic reviews: Run /screen-papers for PRISMA-compliant screening
+   with formal inclusion/exclusion criteria and quality assessment.
+
 🔄 PROCEEDING TO PHASE 2 (Theory & Framing) unless you redirect.
    → Override: tell me to adjust scope, add/remove themes, or dig deeper into a specific area.
 ```
@@ -226,6 +229,9 @@ Contribution: [1-sentence summary]
 Target venue: [Venue] — because [fit]
 
 📁 Saved: framing.md (contains full paper-ready paragraphs)
+
+💡 Optional: Run /analyze-positioning to build a differentiation matrix
+   against the closest competitor papers and sharpen your contribution.
 
 🔄 PROCEEDING TO PHASE 3 (Concept Matrix & Structure) unless you redirect.
    → Override: different theory, different method, different scope, add/drop RQ.
@@ -530,6 +536,25 @@ LaTeX validation:
    → Edit paper.tex for final adjustments (author info, acknowledgments)
    → For arXiv: paper.tex + arxiv.sty + figures/ + paper.bbl
    → Run /export-latex again after any draft.md changes
+
+💡 Before sharing with co-authors or submitting:
+   → Run /review-paper for a simulated double-blind peer review
+     (2 AI reviewers assess contribution, method, theory, writing)
+   → Then use /respond-reviewers to implement the feedback systematically
+
+💡 Quality checks:
+   → Run /analyze-writing for a writing style analysis (passive voice, hedging, transitions)
+   → Run /monitor-literature to check for new papers published since your search
+   → Run /verify-citations to ensure cited sources support your claims
+
+💡 Submission preparation:
+   → Run /prepare-submission [venue] for anonymization check, cover letter,
+     reviewer suggestions, and formatting validation
+   → Run /generate-slides for a conference presentation deck
+
+💡 Collaboration:
+   → Use the coauthor-engine to track CRediT contributions and generate
+     the author contribution statement
 ```
 
 ---

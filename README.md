@@ -3,7 +3,7 @@
 > A Claude Code plugin that autonomously writes academic papers — from literature search to production-ready LaTeX/PDF.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Plugin Version](https://img.shields.io/badge/plugin-v5.4.0-green)]()
+[![Plugin Version](https://img.shields.io/badge/plugin-v5.5.0-green)]()
 [![Template](https://img.shields.io/badge/template-arxiv--style-orange)](https://github.com/kourgeorge/arxiv-style)
 
 ## Quick Start
@@ -23,7 +23,7 @@ echo 'GOOGLE_API_KEY="your-key"' > .env
 /write-paper The impact of generative AI on organizational decision-making
 ```
 
-That's it. The plugin ships both MCP servers (`academic-search` and `paperbanana`), all 8 skill engines, 8 slash commands, and the autonomous pipeline agent. Everything starts automatically.
+That's it. The plugin ships both MCP servers (`academic-search` and `paperbanana`), all 14 skill engines, 15 slash commands, and the autonomous pipeline agent. Everything starts automatically.
 
 **Technical paper:** [The Open Academic Paper Machine: An Autonomous LLM Plugin for End-to-End Academic Paper Production](paper/paper.pdf) (Blask, 2026) — describes the system architecture, design principles, and evaluation. LaTeX source in [`paper/`](paper/).
 
@@ -123,16 +123,30 @@ sudo apt-get install texlive-full
 
 ## Commands
 
+### Core Pipeline
+
 | Command | Description |
 |---------|-------------|
 | `/write-paper [title]` | **Full pipeline** — all 8 phases, start to finish |
-| `/export-latex` | Convert finished draft to arxiv-style LaTeX + compiled PDF |
-| `/search-papers [topic]` | Phase 1 only: systematic literature search across 4 APIs |
-| `/draft-section [section]` | Write one specific section as complete paragraphs |
-| `/respond-reviewers [pdf or comments]` | **Full revision loop** — extract feedback, classify, implement, recompile, latexdiff |
+| `/search-papers [topic]` | Phase 1: systematic literature search across 4 APIs |
+| `/draft-section [section]` | Phase 4: write one specific section as complete paragraphs |
+| `/export-latex` | Phase 6: convert finished draft to arxiv-style LaTeX + compiled PDF |
+| `/verify-citations` | Phase 7: **verify all citations** against actual source content |
+| `/respond-reviewers [pdf or comments]` | Phase 8: **full revision loop** — extract feedback, classify, implement, recompile, latexdiff |
 | `/generate-figure [description]` | AI-generated academic diagram from text |
 | `/generate-plot [datafile] [intent]` | Statistical plot from CSV/JSON data |
-| `/verify-citations` | **Verify all citations** against actual source content |
+
+### Extended Capabilities (v5.5.0)
+
+| Command | Description |
+|---------|-------------|
+| `/review-paper [venue]` | **Simulated peer review** — 2 independent reviewer reports calibrated to top IS/CS venues |
+| `/screen-papers [criteria]` | PRISMA-compliant SLR screening with quality assessment and flow diagram |
+| `/analyze-positioning` | Differentiation matrix against closest related work + positioning statement |
+| `/analyze-writing [section]` | Writing style analysis — passive voice, hedging, readability, 8 quality metrics |
+| `/prepare-submission [venue]` | Venue-specific submission package: anonymization, cover letter, reviewer suggestions |
+| `/monitor-literature` | Re-run search queries, find papers published since last search |
+| `/generate-slides [format]` | Conference presentation slides with speaker notes (Marp-compatible) |
 
 ---
 
@@ -144,18 +158,31 @@ sudo apt-get install texlive-full
 
 ### Skill Engines
 
-The plugin contains 8 specialized skill engines that the paper-machine agent orchestrates:
+The plugin contains 14 specialized skill engines (~5,300 lines of domain knowledge) that the paper-machine agent orchestrates:
+
+#### Core Pipeline Engines
 
 | Engine | Responsibility | Key Capabilities |
 |--------|---------------|-----------------|
-| **writing-engine** | Paragraph-level text production | Section templates, sentence formulas, academic register for IS/WI/BWL |
-| **literature-engine** | Systematic literature discovery | 4 academic APIs, snowballing, PRISMA screening, concept matrix |
+| **literature-engine** | Systematic literature discovery | 4 academic APIs, snowballing, PRISMA screening, concept matrix, monitoring |
 | **theory-engine** | Theoretical framing | Theory matching, gap formulation, hypothesis/design principle derivation |
-| **method-engine** | Research design | SLR, case study, Gioia, Mayring, grounded theory, PLS-SEM, DSR templates |
+| **method-engine** | Research design | 13 method templates (SLR, DSR, case study, Gioia, Mayring, grounded theory, PLS-SEM, mixed, experiment/RCT, action research, ethnography, Delphi, simulation) + research data management |
+| **writing-engine** | Paragraph-level text production | Section templates, sentence formulas, academic register for IS/WI/BWL, style analysis (8 metrics) |
 | **figure-engine** | Visual production | PaperBanana AI diagrams (Gemini) with matplotlib/seaborn fallback |
 | **latex-engine** | Document compilation | arxiv-style conversion, `\citep`/`\citet` citation resolution, PDF build |
 | **verification-engine** | Citation verification | Source retrieval (abstract + full-text), claim-source comparison, verification report |
 | **review-engine** | Revision automation | PDF annotation extraction, comment classification, change planning, latexdiff generation |
+
+#### Extended-Capability Engines (v5.5.0)
+
+| Engine | Responsibility | Key Capabilities |
+|--------|---------------|-----------------|
+| **screening-engine** | SLR paper screening | PRISMA-compliant title/abstract + full-text screening, quality assessment, flow diagram |
+| **peer-review-engine** | Simulated peer review | 2 independent reviewer reports (Methodologist + Theorist), venue-calibrated, feeds into review-engine |
+| **positioning-engine** | Competitive positioning | Differentiation matrix, unique positioning analysis, draft positioning paragraph |
+| **submission-engine** | Submission preparation | Anonymization checks, cover letter generation, reviewer suggestions, venue formatting validation |
+| **presentation-engine** | Slide generation | Conference slides with speaker notes from paper, Marp-compatible output |
+| **coauthor-engine** | Author management | CRediT contribution tracking, human-AI division of labor documentation |
 
 ### MCP Servers (Bundled)
 
@@ -172,7 +199,7 @@ Both servers are declared in `plugin.json` and start automatically with the plug
 
 ### Pipeline Agent
 
-The `paper-machine` agent (`agents/paper-machine.md`) is an autonomous agent prompt that orchestrates all 8 skill engines through the pipeline phases. Operating principles:
+The `paper-machine` agent (`agents/paper-machine.md`, 706 lines) is an autonomous agent prompt that orchestrates all 14 skill engines through the pipeline phases. Since v5.5.0, the agent proactively suggests extended-capability engines at appropriate stages: screening after Phase 1, positioning after Phase 2, and the full post-production suite (peer review, submission, style analysis, slides) after Phase 6. Operating principles:
 
 1. **DO, don't ask.** Make decisions and present results.
 2. **Produce text, not plans.** Every phase yields deliverable output.
@@ -182,7 +209,7 @@ The `paper-machine` agent (`agents/paper-machine.md`) is an autonomous agent pro
 
 ### Markdown-to-LaTeX Converter
 
-`scripts/md_to_latex.py` (733 lines) converts the draft into production-ready LaTeX:
+`scripts/md_to_latex.py` (732 lines) converts the draft into production-ready LaTeX:
 
 - `(Author, Year)` citations to `\citep{key}` / `\citet{key}` with BibTeX key matching
 - Markdown tables to `booktabs` LaTeX tables
@@ -229,31 +256,44 @@ After `/write-paper` + `/export-latex`, your project directory contains:
 │   ├── plugin.json             # Plugin manifest + MCP server config
 │   └── marketplace.json        # Marketplace definition for install
 ├── agents/
-│   └── paper-machine.md        # Autonomous 6-phase pipeline agent (~3,200 lines)
-├── commands/
-│   ├── write-paper.md          # Full pipeline command
-│   ├── export-latex.md         # LaTeX export command
-│   ├── search-papers.md        # Literature search command
-│   ├── draft-section.md        # Single section drafting
-│   ├── generate-figure.md      # AI figure generation
-│   ├── generate-plot.md        # Statistical plot generation
-│   ├── respond-reviewers.md    # R&R response drafting
-│   └── verify-citations.md    # Citation verification command
-├── skills/
-│   ├── writing-engine/         # Academic writing templates
-│   ├── literature-engine/      # Systematic literature search
+│   └── paper-machine.md        # Autonomous pipeline agent (706 lines)
+├── commands/                    # 15 slash commands
+│   ├── write-paper.md          # /write-paper  → full pipeline
+│   ├── search-papers.md        # /search-papers → Phase 1
+│   ├── screen-papers.md        # /screen-papers → SLR screening
+│   ├── draft-section.md        # /draft-section → Phase 4
+│   ├── export-latex.md         # /export-latex  → Phase 6
+│   ├── verify-citations.md     # /verify-citations → Phase 7
+│   ├── respond-reviewers.md    # /respond-reviewers → Phase 8
+│   ├── review-paper.md         # /review-paper → simulated peer review
+│   ├── analyze-positioning.md  # /analyze-positioning
+│   ├── analyze-writing.md      # /analyze-writing → style analysis
+│   ├── monitor-literature.md   # /monitor-literature
+│   ├── prepare-submission.md   # /prepare-submission
+│   ├── generate-figure.md      # /generate-figure
+│   ├── generate-plot.md        # /generate-plot
+│   └── generate-slides.md      # /generate-slides
+├── skills/                      # 14 domain-specific engines (~5,300 lines)
+│   ├── literature-engine/      # Systematic literature search + monitoring
 │   ├── theory-engine/          # Theoretical framing
-│   ├── method-engine/          # Research methodology
+│   ├── method-engine/          # 13 research method templates + RDM
+│   ├── writing-engine/         # Academic writing templates + style analysis
 │   ├── figure-engine/          # Figure generation (PaperBanana)
 │   ├── latex-engine/           # LaTeX conversion + compilation
-│   ├── verification-engine/   # Citation verification against sources
-│   └── review-engine/         # Revision automation (PDF annotation → implement → latexdiff)
+│   ├── verification-engine/    # Citation verification against sources
+│   ├── review-engine/          # Revision automation (PDF → implement → latexdiff)
+│   ├── screening-engine/       # PRISMA-compliant SLR screening
+│   ├── peer-review-engine/     # Simulated double-blind peer review
+│   ├── positioning-engine/     # Competitive positioning analysis
+│   ├── submission-engine/      # Venue-specific submission preparation
+│   ├── presentation-engine/    # Conference slide generation
+│   └── coauthor-engine/        # CRediT author contribution tracking
 ├── scripts/
-│   ├── md_to_latex.py          # Markdown-to-LaTeX converter (733 lines)
+│   ├── md_to_latex.py          # Markdown-to-LaTeX converter (732 lines)
 │   └── extract_annotations.py  # PDF annotation extraction (PyMuPDF)
 ├── templates/
 │   └── arxiv.sty               # arxiv-style LaTeX template
-├── paper/                          # Technical paper (Blask, 2026)
+├── paper/                       # Technical paper (Blask, 2026)
 │   ├── paper.tex               # LaTeX source
 │   ├── paper.pdf               # Compiled PDF
 │   ├── references.bib          # Bibliography
@@ -341,7 +381,7 @@ The review-engine automates the co-author/reviewer revision loop — derived fro
 
 ## Supported Research Methods
 
-The method-engine provides complete section templates for:
+The method-engine (797 lines) provides complete section templates for 13 methodologies:
 
 - **Systematic Literature Review (SLR)** — PRISMA flow, inclusion/exclusion criteria
 - **Case Study** — Yin methodology, cross-case analysis
@@ -351,6 +391,13 @@ The method-engine provides complete section templates for:
 - **PLS-SEM** — Measurement model, structural model
 - **Design Science Research (DSR)** — Hevner framework, evaluation cycles
 - **Mixed Methods** — Sequential/concurrent designs
+- **Experiment / RCT** — Experimental design, control groups, randomization
+- **Action Research** — Iterative cycles, practitioner-researcher collaboration
+- **Ethnography** — Fieldwork, participant observation, thick description
+- **Delphi Study** — Expert panel, multi-round consensus building
+- **Simulation** — Agent-based modeling, discrete event simulation
+
+Plus **Research Data Management** guidance: FAIR principles, data management plans (DMP), data availability statements.
 
 ---
 

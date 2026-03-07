@@ -2,9 +2,10 @@
 name: literature-engine
 description: >
   ALWAYS activate when the user needs to find, organize, review, or synthesize
-  academic literature. Uses academic APIs (Semantic Scholar, OpenAlex, CrossRef, arXiv) 
-  via scripts/academic_search.py. Handles search strategy, snowballing, screening, 
-  concept matrices, and narrative synthesis. NEVER use web scraping for paper discovery — 
+  academic literature. Uses academic APIs (Semantic Scholar, OpenAlex, CrossRef, arXiv)
+  via scripts/academic_search.py. Handles search strategy, snowballing, screening,
+  concept matrices, narrative synthesis, and literature monitoring (detecting new
+  publications since last search). NEVER use web scraping for paper discovery —
   APIs first, web search only for verification.
 ---
 
@@ -220,3 +221,126 @@ in the context of [your study's context].
 - **Industry reports** (McKinsey, Gartner, Deloitte) useful for motivation, not for theoretical claims
 - **Conference papers** from ICIS, ECIS, AAAI, NeurIPS useful for cutting-edge
 - **Recency premium**: For GenAI topics, 2023+ papers carry extra weight
+
+---
+
+## Monitoring / Living Literature Review
+
+### Purpose
+Re-run searches periodically to detect newly published papers since the last search.
+Essential for fast-moving fields (AI, GenAI) and for papers with long revision cycles
+where the literature base may become stale.
+
+### When to Run
+- Before submitting a paper (check for new relevant work published during writing)
+- During R&R (check what appeared between submission and revision)
+- For living/systematic reviews (quarterly or monthly updates)
+- When user runs `/monitor-literature`
+
+### Monitoring Workflow
+
+#### Step 1: Recover Original Search Parameters
+Load the original queries from `framing.md` or reconstruct from `literature_base.csv` metadata:
+- Extract unique search queries used
+- Note the original date range (the `date_to` becomes the new `date_from`)
+- If no metadata exists, ask the user for the approximate last search date
+
+#### Step 2: Execute Update Search
+
+```python
+import sys
+sys.path.insert(0, "scripts")
+from academic_search import search_all, deduplicate_papers, papers_to_csv
+import csv
+from datetime import datetime
+
+# Load existing literature base for deduplication
+existing_papers = []
+with open("literature_base.csv", "r") as f:
+    reader = csv.DictReader(f)
+    existing_papers = list(reader)
+
+existing_titles = {p.get("title", "").lower().strip() for p in existing_papers}
+existing_dois = {p.get("doi", "").strip() for p in existing_papers if p.get("doi")}
+
+# Re-run queries with date filter
+last_search_date = "2025-01-15"  # from metadata or user input
+queries = [
+    "generative AI enterprise implementation",
+    "autonomous AI agents organizational",
+    # ... original queries from framing.md
+]
+
+new_papers = []
+for q in queries:
+    results = search_all(q, max_results_per_source=20, year_from=int(last_search_date[:4]))
+    new_papers.extend(results)
+
+new_papers = deduplicate_papers(new_papers)
+
+# Filter out papers already in the literature base
+truly_new = []
+for p in new_papers:
+    title_match = p.get("title", "").lower().strip() in existing_titles
+    doi_match = p.get("doi", "").strip() in existing_dois if p.get("doi") else False
+    if not title_match and not doi_match:
+        truly_new.append(p)
+
+print(f"Found {len(truly_new)} new papers since {last_search_date}")
+```
+
+#### Step 3: Present New Papers for Review
+
+```markdown
+## Literature Monitoring Report
+
+**Last search:** [date]
+**Update search:** [today's date]
+**Queries re-run:** [N]
+**New papers found:** [N] (after deduplication against existing [N] papers)
+
+### Potentially Relevant New Papers
+
+| # | Title | Authors | Year | Venue | Citations | Relevance |
+|---|-------|---------|------|-------|-----------|-----------|
+| 1 | [Title] | [First author et al.] | [Year] | [Venue] | [N] | [Brief note] |
+| 2 | [Title] | [First author et al.] | [Year] | [Venue] | [N] | [Brief note] |
+| ... | | | | | | |
+
+### Recommended Actions
+- **Add to literature base:** Papers #[list] — directly relevant to RQs
+- **Read in full:** Papers #[list] — potentially important, needs assessment
+- **Skip:** Papers #[list] — tangential or out of scope
+
+→ Approve to update literature_base.csv and references.bib with selected papers.
+```
+
+#### Step 4: Update Literature Base (upon approval)
+
+```python
+# Add approved new papers to literature base
+approved_papers = [truly_new[i] for i in approved_indices]
+all_papers = existing_papers + approved_papers
+papers_to_csv(all_papers, "literature_base.csv")
+papers_to_bibtex_file(approved_papers, "references.bib", append=True)
+```
+
+### Monitoring Metadata
+
+After each monitoring run, save metadata for future runs:
+
+```markdown
+<!-- monitoring_metadata (appended to literature_base.csv or framing.md) -->
+## Search History
+| Date | Queries | Results | New Added | Total |
+|------|---------|---------|-----------|-------|
+| [initial date] | [N] queries | [N] papers | [N] | [N] |
+| [update date] | [N] queries | [N] new | [N] added | [N] |
+```
+
+### Living Review Pattern
+For papers maintained over months/years:
+1. Set a **monitoring schedule** (monthly for fast fields, quarterly for stable fields)
+2. Each run produces a timestamped monitoring report in `outputs/monitoring_[date].md`
+3. Track cumulative additions to show the literature base is current
+4. Note in the paper: "The literature search was last updated on [date]"
