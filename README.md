@@ -507,6 +507,24 @@ Plus **Research Data Management** guidance: FAIR principles, data management pla
 
 ---
 
+## AI Usage Disclaimer
+
+Many journals and conferences now require disclosure of AI tool usage in research ([ACM Policy](https://www.acm.org/publications/policies/new-acm-policy-on-authorship), [Springer Nature Policy](https://www.nature.com/nature-portfolio/editorial-policies/ai), [Elsevier Policy](https://www.elsevier.com/about/policies-and-standards/the-use-of-generative-ai-and-ai-assisted-technologies-in-writing)). Below is a **template disclaimer** you can adapt for papers produced with or assisted by this tool.
+
+### Template (copy and adapt)
+
+> **Use of AI-assisted tools.** This paper was produced with the assistance of the *Open Academic Paper Machine* (Blask, 2026), a Claude Code plugin that automates academic paper production workflows. Specifically, AI was used for: [**select applicable**] (1) systematic literature search and deduplication across academic databases; (2) drafting initial text for [specific sections, e.g., "the Related Work section"]; (3) generation of publication-quality figures using PaperBanana (Zhu et al., 2026); (4) conversion to LaTeX and bibliography management; (5) citation verification against source abstracts. All AI-generated content was reviewed, validated, and revised by the author(s). The author(s) take full responsibility for the final content, including the accuracy of all claims, citations, and conclusions. The tool and its documentation are openly available at https://github.com/TobiasBlask/open-paper-machine.
+
+### Guidance
+
+- **Be specific.** Don't just write "AI was used." State *which tasks* were AI-assisted and *which parts* you wrote or verified yourself.
+- **Claim responsibility.** Journals want to know a human checked the output. Make that explicit.
+- **Cite the tools.** Reference both the Paper Machine and PaperBanana if you used AI figures (see [Citation](#citation) below).
+- **Check venue policy.** Requirements vary — some venues require the disclaimer in a footnote, others in an acknowledgments section, others in a cover letter. Check your target venue's AI policy before submission.
+- **Not an author.** Current consensus across major publishers: AI tools cannot be listed as co-authors. Credit them in the methods or acknowledgments instead.
+
+---
+
 ## Citation
 
 If you use this tool in your research, please cite the technical paper:
