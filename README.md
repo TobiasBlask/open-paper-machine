@@ -26,7 +26,7 @@ echo 'GOOGLE_API_KEY="your-key"' > ~/.paperbanana.env
 /write-paper The impact of generative AI on organizational decision-making
 ```
 
-That's it. The plugin ships the `academic-search` MCP server, the PaperBanana direct Python API for figure generation, all 16 skill engines, 4 agents, 24 curated scientific skills, 17 slash commands, and the autonomous pipeline agent. Everything starts automatically.
+That's it. The plugin ships the `academic-search` MCP server, the PaperBanana direct Python API for figure generation, all 16 skill engines, 4 agents, 24 curated scientific skills, 20 slash commands, and the autonomous pipeline agent. Everything starts automatically.
 
 **Technical paper:** [The Open Academic Paper Machine: An Autonomous LLM Plugin for End-to-End Academic Paper Production](paper/paper.pdf) (Blask, 2026) — describes the system architecture, design principles, and evaluation. LaTeX source in [`paper/`](paper/).
 
@@ -205,7 +205,10 @@ Evaluations persist to `research-evaluations/*.md` for cross-session continuity.
 
 | Command | Description |
 |---------|-------------|
-| `/evaluate-idea [topic]` | **Standalone idea stress-test** — 7 dimensions, 3 agents, conclusion-first test, PURSUE/PARK/KILL verdict |
+| `/evaluate-idea [topic]` | **Full idea stress-test** — 7 dimensions, 3 agents, conclusion-first test, PURSUE/PARK/KILL verdict |
+| `/brainstorm [topic]` | **Creative brainstorming** — cross-field connections, assumption challenges, alternative framings, wild cards |
+| `/triage-project` | **Project triage** — should you continue, pivot, or kill? 5-signal assessment |
+| `/scooping-check [topic]` | **Scooping risk** — who else is working on this? Watch list with researchers, venues, search terms |
 
 ### Core Pipeline
 
@@ -389,8 +392,11 @@ After `/write-paper` + `/export-latex`, your project directory contains:
 │   ├── idea-critic.md          # Adversarial idea stress-test (7 dimensions)
 │   ├── research-strategist.md  # Strategic research advisor (5 modes)
 │   └── brainstormer.md         # Creative idea generator (cross-field)
-├── commands/                    # 17 slash commands
-│   ├── evaluate-idea.md        # /evaluate-idea → Phase 0 standalone (v6.3.0)
+├── commands/                    # 20 slash commands
+│   ├── evaluate-idea.md        # /evaluate-idea → full idea stress-test (v6.3.0)
+│   ├── brainstorm.md           # /brainstorm → creative idea generation (v6.3.0)
+│   ├── triage-project.md       # /triage-project → continue/pivot/kill (v6.3.0)
+│   ├── scooping-check.md       # /scooping-check → competition assessment (v6.3.0)
 │   ├── write-paper.md          # /write-paper  → full pipeline
 │   ├── search-papers.md        # /search-papers → Phase 1
 │   ├── screen-papers.md        # /screen-papers → SLR screening
