@@ -293,6 +293,7 @@ Generate a comprehensive submission checklist tailored to the venue:
 - [ ] Paper compiles without errors (0 errors, 0 undefined references)
 - [ ] Within page/word limit ([N] pages / [N] words — limit: [N])
 - [ ] Abstract within word limit ([N] words — limit: [N])
+- [ ] Abstract passes agent-readability check (domain named, RQ explicit, method + data source named, ≥1 concrete finding, no deferred meaning — see writing-engine Agent-Readability Rules)
 - [ ] Keywords included (if required)
 - [ ] All [CITE], [DATA], [TODO] placeholders resolved
 - [ ] All figures referenced in text and present in figures/

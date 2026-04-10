@@ -313,15 +313,59 @@ non-obvious future research questions].
 
 ## ABSTRACT (150-250 words, write LAST)
 
-Template:
+### Why the Abstract Matters More Than You Think
+
+AI research agents (Codex, Claude, Semantic Scholar recommender, Elicit, etc.) screen
+papers by reading **abstracts only**. They rarely access full text — paywalls, token
+limits, and API constraints mean the abstract is often *the* paper from an agent's
+perspective. A vague or jargon-heavy abstract makes a paper invisible to automated
+research workflows.
+
+**Design principle:** Write the abstract so that a research agent can extract the
+research question, method, domain, key finding, and contribution in a single pass
+without reading anything else.
+
+### Template (Structured for Agent Discoverability)
+
 ```
-[1 sentence: Context/Motivation]
-[1 sentence: Problem/Gap]
-[1 sentence: Purpose of this study]
-[1-2 sentences: Method]
-[2-3 sentences: Key findings]
-[1 sentence: Contribution/Implication]
+[1 sentence: Context/Motivation — name the domain explicitly]
+[1 sentence: Problem/Gap — state what is unknown or unresolved]
+[1 sentence: Purpose — "This study [verb]..." with concrete scope]
+[1-2 sentences: Method — name the approach, data source, and sample]
+[2-3 sentences: Key findings — include concrete results, numbers where available]
+[1 sentence: Contribution/Implication — what changes because of this work]
 ```
+
+### Agent-Readability Rules
+
+1. **Name the domain in the first sentence.** Not "organizations face challenges"
+   but "enterprise software teams face challenges." Agents match on domain terms.
+2. **State the research question explicitly.** Not "we explore implications" but
+   "we investigate whether X leads to Y." Agents filter on parseable RQs.
+3. **Include the method and data source by name.** Not "qualitative methods" but
+   "semi-structured interviews with 24 IT managers" or "fine-tuned LLaMA-3-8B on
+   12,000 StackOverflow posts." Agents use method terms for screening queries.
+4. **Report at least one concrete finding.** Not "results show significant effects"
+   but "adoption increased task completion by 34% (p < .01)." Agents rank specificity.
+5. **Avoid jargon without grounding.** If you must use a framework name, briefly
+   explain it: "Drawing on affordance theory (the actionable properties technology
+   offers users), we find..." — agents cannot resolve undefined acronyms or niche
+   framework names.
+6. **Front-load keywords.** The first 50 words carry disproportionate weight in
+   semantic search. Put the topic, method, and domain there — not throat-clearing.
+7. **Use structured abstract format when the venue permits.** Labeled sections
+   (Objective / Method / Results / Conclusion) are trivially parseable by agents
+   and increasingly common in IS, medical, and CS venues.
+
+### Anti-Patterns (Agent Invisibility)
+
+| Pattern | Problem | Fix |
+|---------|---------|-----|
+| "This paper contributes to the literature on..." | No searchable content | Lead with the finding |
+| "Results are discussed in light of..." | Deferred meaning — abstract says nothing | State the result |
+| "We use a mixed-methods approach" | Too vague for method-based filtering | Name the specific methods |
+| "Implications for theory and practice are drawn" | No concrete takeaway | State the implication |
+| "Drawing on [Framework], we explore..." | Explore ≠ finding; framework may be unknown | State what you found |
 
 ---
 

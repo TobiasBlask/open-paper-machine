@@ -431,7 +431,11 @@ Save all figures to `figures/` and reference with `\ref{fig:label}` in the text.
 - Final reflection on significance
 
 **4g. Abstract** (write LAST, 150-250 words)
-- Context → Gap → Purpose → Method → Findings → Implication
+- Follow the **Agent-Readability Rules** in writing-engine SKILL.md
+- Structure: Context → Gap → Purpose → Method → Findings → Implication
+- MUST name the domain, method, data source, and at least one concrete finding explicitly
+- MUST be self-contained: an AI agent screening only the abstract should be able to determine the paper's RQ, method, and contribution without reading further
+- AVOID: vague openers ("This paper explores..."), deferred findings ("Results are discussed..."), unnamed methods ("qualitative approach")
 
 #### Deliverables:
 - `draft.md` — THE COMPLETE PAPER DRAFT, all sections, all paragraphs
